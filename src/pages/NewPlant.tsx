@@ -37,10 +37,12 @@ const NewPlant = () => {
     e.preventDefault();
     
     try {
-      await createPlant({
+      console.log('Submitting form with data:', formData);
+      
+      const plantToCreate = {
         apelido: formData.apelido,
         especie: formData.especie,
-        bancoSementes: formData.bancoSementes,
+        bancoSementes: formData.bancoSementes || undefined,
         origem: formData.origem,
         genetica: {
           indica: formData.indica,
@@ -48,11 +50,14 @@ const NewPlant = () => {
           ruderalis: formData.ruderalis,
         },
         geracao: formData.origem === 'semente' ? 1 : 0,
-        fenotipoNotas: formData.fenotipoNotas,
-        observacoes: formData.observacoes,
+        fenotipoNotas: formData.fenotipoNotas || undefined,
+        observacoes: formData.observacoes || undefined,
         viva: true,
         dataNascimento: new Date().toISOString().split('T')[0],
-      });
+      };
+      
+      console.log('Creating plant:', plantToCreate);
+      await createPlant(plantToCreate);
       
       toast({
         title: 'Planta criada!',
@@ -61,9 +66,10 @@ const NewPlant = () => {
       
       navigate('/plants');
     } catch (error) {
+      console.error('Error creating plant:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível criar a planta',
+        description: error instanceof Error ? error.message : 'Não foi possível criar a planta',
         variant: 'destructive',
       });
     }

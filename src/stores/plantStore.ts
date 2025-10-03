@@ -44,26 +44,39 @@ export const usePlantStore = create<PlantState>((set, get) => ({
   },
   
   createPlant: async (plantData) => {
-    const codigo = await generatePlantCode(plantData.origem, plantData.maeId);
-    const qrCodeData = await QRCode.toDataURL(`app://plant/${codigo}`);
-    
-    const now = new Date().toISOString();
-    const plant: Plant = {
-      ...plantData,
-      codigo,
-      qrCodeData,
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    const id = await db.plants.add(plant);
-    const createdPlant = { ...plant, id };
-    
-    set((state) => ({
-      plants: [createdPlant, ...state.plants],
-    }));
-    
-    return createdPlant;
+    try {
+      console.log('Creating plant with data:', plantData);
+      
+      const codigo = await generatePlantCode(plantData.origem, plantData.maeId);
+      console.log('Generated code:', codigo);
+      
+      const qrCodeData = await QRCode.toDataURL(`app://plant/${codigo}`);
+      console.log('Generated QR code');
+      
+      const now = new Date().toISOString();
+      const plant: Omit<Plant, 'id'> = {
+        ...plantData,
+        codigo,
+        qrCodeData,
+        createdAt: now,
+        updatedAt: now,
+      };
+      
+      console.log('Plant object before add:', plant);
+      const id = await db.plants.add(plant as Plant);
+      console.log('Plant created with id:', id);
+      
+      const createdPlant = { ...plant, id } as Plant;
+      
+      set((state) => ({
+        plants: [createdPlant, ...state.plants],
+      }));
+      
+      return createdPlant;
+    } catch (error) {
+      console.error('Error in createPlant:', error);
+      throw error;
+    }
   },
   
   updatePlant: async (id, updates) => {
