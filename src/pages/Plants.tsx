@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Leaf, Plus, QrCode } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import { getPhaseLabel } from '@/lib/phases';
 
 const Plants = () => {
   const { plants, fetchPlants, loading } = usePlantStore();
@@ -38,7 +39,7 @@ const Plants = () => {
           </p>
         </div>
         <Link to="/plants/new">
-          <Button className="gradient-primary">
+          <Button variant="gradient">
             <Plus className="w-4 h-4 mr-2" />
             Nova Planta
           </Button>
@@ -53,7 +54,7 @@ const Plants = () => {
             Comece adicionando suas plantas mães
           </p>
           <Link to="/plants/new">
-            <Button className="gradient-primary">Adicionar Primeira Planta</Button>
+            <Button variant="gradient">Adicionar Primeira Planta</Button>
           </Link>
         </Card>
       ) : (
@@ -75,6 +76,14 @@ const Plants = () => {
                         {plant.especie}
                         {plant.bancoSementes && ` • ${plant.bancoSementes}`}
                       </p>
+                      {plant.faseAtual && (
+                        <div className="mb-2">
+                          <Badge variant="default" className="text-xs">
+                            {getPhaseLabel(plant.faseAtual)}
+                            {plant.metodoAtual && ` • ${plant.metodoAtual}`}
+                          </Badge>
+                        </div>
+                      )}
                       <div className="flex gap-2 text-xs">
                         <Badge variant="secondary">
                           I: {plant.genetica.indica}%
@@ -132,6 +141,14 @@ const Plants = () => {
                             <p className="text-sm text-muted-foreground mb-2">
                               Clone de: {mother.apelido} ({mother.codigo})
                             </p>
+                          )}
+                          {clone.faseAtual && (
+                            <div className="mb-2">
+                              <Badge variant="default" className="text-xs">
+                                {getPhaseLabel(clone.faseAtual)}
+                                {clone.metodoAtual && ` • ${clone.metodoAtual}`}
+                              </Badge>
+                            </div>
                           )}
                           <div className="flex gap-2 text-xs">
                             <Badge variant="secondary">Geração {clone.geracao}</Badge>

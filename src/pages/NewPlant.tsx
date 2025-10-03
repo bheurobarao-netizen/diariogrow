@@ -8,13 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Leaf } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { PhaseSelector } from '@/components/plants/PhaseSelector';
+import { PlantPhase } from '@/lib/phases';
 
 const NewPlant = () => {
   const navigate = useNavigate();
@@ -31,6 +26,8 @@ const NewPlant = () => {
     ruderalis: 0,
     fenotipoNotas: '',
     observacoes: '',
+    faseAtual: undefined as PlantPhase | undefined,
+    metodoAtual: '',
   });
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,6 +47,8 @@ const NewPlant = () => {
           ruderalis: formData.ruderalis,
         },
         geracao: formData.origem === 'semente' ? 1 : 0,
+        faseAtual: formData.faseAtual,
+        metodoAtual: formData.metodoAtual || undefined,
         fenotipoNotas: formData.fenotipoNotas || undefined,
         observacoes: formData.observacoes || undefined,
         viva: true,
@@ -165,6 +164,13 @@ const NewPlant = () => {
               Total: {formData.indica + formData.sativa + formData.ruderalis}%
             </p>
           </div>
+          
+          <PhaseSelector
+            phase={formData.faseAtual}
+            method={formData.metodoAtual}
+            onPhaseChange={(phase) => setFormData({ ...formData, faseAtual: phase, metodoAtual: '' })}
+            onMethodChange={(method) => setFormData({ ...formData, metodoAtual: method })}
+          />
           
           <div className="space-y-2">
             <Label htmlFor="fenotipo">Notas de Fenótipo</Label>

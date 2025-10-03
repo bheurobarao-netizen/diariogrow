@@ -1,4 +1,5 @@
 import Dexie, { Table } from 'dexie';
+import { PlantPhase } from './phases';
 
 export interface Plant {
   id?: number;
@@ -14,6 +15,8 @@ export interface Plant {
   origem: 'semente' | 'clone';
   maeId?: number;
   geracao: number;
+  faseAtual?: PlantPhase;
+  metodoAtual?: string;
   fenotipoNotas?: string;
   lote?: string;
   dataGerminacao?: string;
