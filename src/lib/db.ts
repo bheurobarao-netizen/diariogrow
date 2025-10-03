@@ -1,0 +1,77 @@
+import Dexie, { Table } from 'dexie';
+
+export interface Plant {
+  id?: number;
+  codigo: string;
+  apelido: string;
+  especie: string;
+  bancoSementes?: string;
+  genetica: {
+    indica: number;
+    sativa: number;
+    ruderalis: number;
+  };
+  origem: 'semente' | 'clone';
+  maeId?: number;
+  geracao: number;
+  fenotipoNotas?: string;
+  lote?: string;
+  dataGerminacao?: string;
+  dataNascimento?: string;
+  viva: boolean;
+  qrCodeData?: string;
+  observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Entry {
+  id?: number;
+  date: string;
+  plantId?: number;
+  fase?: 'mae' | 'clone' | 'veg' | 'flow' | 'flush' | 'colheita' | 'cura';
+  estufa?: string;
+  cepa?: string;
+  content: string;
+  photos: string[];
+  videos: string[];
+  nutrientes?: string;
+  ec?: number;
+  ph?: number;
+  temperatura?: number;
+  umidade?: number;
+  luz?: {
+    ppfd?: number;
+    horas?: number;
+  };
+  checklist?: string[];
+  problemas?: string;
+  solucoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SharedLink {
+  id?: number;
+  token: string;
+  entryId: number;
+  expiresAt: string;
+  createdAt: string;
+}
+
+export class GrowDiaryDB extends Dexie {
+  plants!: Table<Plant>;
+  entries!: Table<Entry>;
+  sharedLinks!: Table<SharedLink>;
+
+  constructor() {
+    super('GrowDiaryDB');
+    this.version(1).stores({
+      plants: '++id, codigo, maeId, viva, createdAt',
+      entries: '++id, date, plantId, fase, createdAt',
+      sharedLinks: '++id, token, entryId, expiresAt'
+    });
+  }
+}
+
+export const db = new GrowDiaryDB();
