@@ -16,29 +16,29 @@ const queryClient = new QueryClient();
 const App = () => {
   const { isAuthenticated } = useAuthStore();
   
-  if (!isAuthenticated) {
-    return <LoginScreen />;
-  }
-  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Timeline />} />
-              <Route path="/plants" element={<Plants />} />
-              <Route path="/plants/new" element={<NewPlant />} />
-              <Route path="/calendar" element={<div className="p-4">Calendário (em breve)</div>} />
-              <Route path="/new" element={<div className="p-4">Nova Entrada (em breve)</div>} />
-              <Route path="/gallery" element={<div className="p-4">Galeria (em breve)</div>} />
-              <Route path="/stats" element={<div className="p-4">Estatísticas (em breve)</div>} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
+          {!isAuthenticated ? (
+            <LoginScreen />
+          ) : (
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Timeline />} />
+                <Route path="/plants" element={<Plants />} />
+                <Route path="/plants/new" element={<NewPlant />} />
+                <Route path="/calendar" element={<div className="p-4">Calendário (em breve)</div>} />
+                <Route path="/new" element={<div className="p-4">Nova Entrada (em breve)</div>} />
+                <Route path="/gallery" element={<div className="p-4">Galeria (em breve)</div>} />
+                <Route path="/stats" element={<div className="p-4">Estatísticas (em breve)</div>} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          )}
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
