@@ -186,7 +186,7 @@ const NewPlant = () => {
             <Button type="button" variant="outline" onClick={() => navigate(-1)} className="flex-1">
               Cancelar
             </Button>
-            <Button type="submit" className="flex-1 gradient-primary">
+            <Button type="submit" variant="gradient" className="flex-1">
               Criar Planta
             </Button>
           </div>
