@@ -71,6 +71,13 @@ export class GrowDiaryDB extends Dexie {
       entries: '++id, date, plantId, fase, createdAt',
       sharedLinks: '++id, token, entryId, expiresAt'
     });
+    
+    // Version 2: Add origem index to plants table
+    this.version(2).stores({
+      plants: '++id, codigo, maeId, origem, viva, createdAt',
+      entries: '++id, date, plantId, fase, createdAt',
+      sharedLinks: '++id, token, entryId, expiresAt'
+    });
   }
 }
 
