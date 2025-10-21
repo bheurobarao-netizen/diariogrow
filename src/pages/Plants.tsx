@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { usePlantStore } from '@/stores/plantStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Leaf, Plus, QrCode } from 'lucide-react';
+import { Leaf, Plus, QrCode, Printer } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { getPhaseLabel } from '@/lib/phases';
+import { Plant } from '@/lib/db';
 
 const Plants = () => {
   const { plants, fetchPlants, loading } = usePlantStore();
@@ -14,6 +15,100 @@ const Plants = () => {
   useEffect(() => {
     fetchPlants();
   }, [fetchPlants]);
+  
+  const printLabel = (plant: Plant) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Etiqueta - ${plant.codigo}</title>
+          <style>
+            @page {
+              size: 100mm 30mm;
+              margin: 0;
+            }
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body {
+              width: 100mm;
+              height: 30mm;
+              padding: 2mm;
+              font-family: Arial, sans-serif;
+              font-size: 8pt;
+              display: flex;
+              gap: 2mm;
+              background: white;
+            }
+            .qr-section {
+              flex-shrink: 0;
+              width: 26mm;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .qr-section img {
+              width: 24mm;
+              height: 24mm;
+            }
+            .info-section {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              gap: 1mm;
+            }
+            .codigo {
+              font-size: 11pt;
+              font-weight: bold;
+              margin-bottom: 0.5mm;
+            }
+            .apelido {
+              font-size: 9pt;
+              font-weight: bold;
+            }
+            .detail {
+              font-size: 7pt;
+              color: #333;
+            }
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="qr-section">
+            ${plant.qrCodeData ? `<img src="${plant.qrCodeData}" alt="QR Code" />` : ''}
+          </div>
+          <div class="info-section">
+            <div class="codigo">${plant.codigo}</div>
+            <div class="apelido">${plant.apelido}</div>
+            <div class="detail">${plant.especie}</div>
+            ${plant.faseAtual ? `<div class="detail">${getPhaseLabel(plant.faseAtual)}</div>` : ''}
+            <div class="detail">I:${plant.genetica.indica}% S:${plant.genetica.sativa}% ${plant.genetica.ruderalis > 0 ? `R:${plant.genetica.ruderalis}%` : ''}</div>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(html);
+    printWindow.document.close();
+    
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    };
+  };
   
   const mothers = plants.filter(p => p.origem === 'semente' && p.viva);
   const clones = plants.filter(p => p.origem === 'clone' && p.viva);
@@ -98,13 +193,22 @@ const Plants = () => {
                         )}
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowQR(showQR === plant.id ? null : plant.id!)}
-                    >
-                      <QrCode className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => printLabel(plant)}
+                      >
+                        <Printer className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowQR(showQR === plant.id ? null : plant.id!)}
+                      >
+                        <QrCode className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                   
                   {showQR === plant.id && plant.qrCodeData && (
@@ -154,13 +258,22 @@ const Plants = () => {
                             <Badge variant="secondary">Geração {clone.geracao}</Badge>
                           </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowQR(showQR === clone.id ? null : clone.id!)}
-                        >
-                          <QrCode className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => printLabel(clone)}
+                          >
+                            <Printer className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowQR(showQR === clone.id ? null : clone.id!)}
+                          >
+                            <QrCode className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                       
                       {showQR === clone.id && clone.qrCodeData && (
