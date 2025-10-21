@@ -27,6 +27,7 @@ import Colheitas from "./pages/Colheitas";
 import NewColheita from "./pages/NewColheita";
 import EditColheita from "./pages/EditColheita";
 import Calendar from "./pages/Calendar";
+import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -317,7 +318,7 @@ const App = () => {
               element={
                 session ? (
                   <Layout>
-                    <div className="p-4">Estatísticas (em breve)</div>
+                    <Stats />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
