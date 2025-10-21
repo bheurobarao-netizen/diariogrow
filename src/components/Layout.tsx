@@ -1,7 +1,10 @@
 import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Calendar, Plus, Images, BarChart3 } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Home, Calendar, Plus, Images, BarChart3, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,6 +12,8 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
   const navItems = [
     { path: '/', icon: Home, label: 'Início' },
@@ -17,9 +22,40 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/gallery', icon: Images, label: 'Galeria' },
     { path: '/stats', icon: BarChart3, label: 'Stats' },
   ];
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: 'Erro ao sair',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      navigate('/auth');
+      toast({
+        title: 'Logout realizado',
+        description: 'Até logo!',
+      });
+    }
+  };
   
   return (
     <div className="flex flex-col h-screen bg-gradient-subtle">
+      <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border px-4 py-3">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <h1 className="text-lg font-semibold text-foreground">Grow Diary</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Sair
+          </Button>
+        </div>
+      </header>
       <main className="flex-1 overflow-y-auto pb-20">
         {children}
       </main>

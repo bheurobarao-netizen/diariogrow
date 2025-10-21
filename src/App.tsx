@@ -1,10 +1,12 @@
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useAuthStore } from "@/stores/authStore";
-import LoginScreen from "@/components/auth/LoginScreen";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Session } from "@supabase/supabase-js";
+import Auth from "./pages/Auth";
 import Layout from "@/components/Layout";
 import Timeline from "./pages/Timeline";
 import Plants from "./pages/Plants";
@@ -15,32 +17,144 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { isAuthenticated } = useAuthStore();
-  
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          {!isAuthenticated ? (
-            <LoginScreen />
-          ) : (
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Timeline />} />
-                <Route path="/plants" element={<Plants />} />
-                <Route path="/plants/new" element={<NewPlant />} />
-                <Route path="/plants/edit/:id" element={<EditPlant />} />
-                <Route path="/calendar" element={<div className="p-4">Calendário (em breve)</div>} />
-                <Route path="/new" element={<div className="p-4">Nova Entrada (em breve)</div>} />
-                <Route path="/gallery" element={<div className="p-4">Galeria (em breve)</div>} />
-                <Route path="/stats" element={<div className="p-4">Estatísticas (em breve)</div>} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          )}
+          <Routes>
+            <Route 
+              path="/auth" 
+              element={session ? <Navigate to="/" replace /> : <Auth />} 
+            />
+            <Route
+              path="/"
+              element={
+                session ? (
+                  <Layout>
+                    <Timeline />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/plants"
+              element={
+                session ? (
+                  <Layout>
+                    <Plants />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/plants/new"
+              element={
+                session ? (
+                  <Layout>
+                    <NewPlant />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/plants/edit/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EditPlant />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                session ? (
+                  <Layout>
+                    <div className="p-4">Calendário (em breve)</div>
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/new"
+              element={
+                session ? (
+                  <Layout>
+                    <div className="p-4">Nova Entrada (em breve)</div>
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/gallery"
+              element={
+                session ? (
+                  <Layout>
+                    <div className="p-4">Galeria (em breve)</div>
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/stats"
+              element={
+                session ? (
+                  <Layout>
+                    <div className="p-4">Estatísticas (em breve)</div>
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
