@@ -15,18 +15,19 @@ const API_BASE_URL = 'https://openapi.tuyaus.com';
 // Generate signature for Tuya API
 async function generateSignature(
   method: string,
-  path: string,
-  params: Record<string, any>,
+  url: string,
   body: string,
   timestamp: string,
   nonce: string,
   accessToken: string = ''
 ): Promise<string> {
+  const contentHash = await hashSHA256(body);
+  
   const stringToSign = [
     method,
-    await hashSHA256(body),
+    contentHash,
     '',
-    path
+    url
   ].join('\n');
 
   const signStr = ACCESS_ID + accessToken + timestamp + nonce + stringToSign;
@@ -65,9 +66,9 @@ async function hmacSHA256(message: string, secret: string): Promise<string> {
 async function getAccessToken(): Promise<string> {
   const timestamp = Date.now().toString();
   const nonce = Math.random().toString(36).substring(7);
-  const path = '/v1.0/token?grant_type=1';
+  const url = '/v1.0/token?grant_type=1';
   
-  const signature = await generateSignature('GET', path, {}, '', timestamp, nonce);
+  const signature = await generateSignature('GET', url, '', timestamp, nonce);
   
   const headers = {
     'client_id': ACCESS_ID!,
@@ -77,7 +78,7 @@ async function getAccessToken(): Promise<string> {
     'nonce': nonce,
   };
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${API_BASE_URL}${url}`, {
     method: 'GET',
     headers,
   });
@@ -94,7 +95,7 @@ async function getAccessToken(): Promise<string> {
 // Make authenticated API request
 async function makeAuthenticatedRequest(
   method: string,
-  path: string,
+  url: string,
   body: any = null,
   accessToken: string
 ): Promise<any> {
@@ -104,8 +105,7 @@ async function makeAuthenticatedRequest(
   
   const signature = await generateSignature(
     method,
-    path,
-    {},
+    url,
     bodyStr,
     timestamp,
     nonce,
@@ -131,7 +131,7 @@ async function makeAuthenticatedRequest(
     options.body = bodyStr;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
+  const response = await fetch(`${API_BASE_URL}${url}`, options);
   const data = await response.json();
   
   if (!data.success) {
