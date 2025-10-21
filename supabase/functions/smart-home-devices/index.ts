@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,29 +11,7 @@ const ACCESS_SECRET = Deno.env.get('SMART_HOME_ACCESS_SECRET');
 const PROJECT_CODE = Deno.env.get('SMART_HOME_PROJECT_CODE');
 const API_BASE_URL = 'https://openapi.tuyaus.com';
 
-// Generate signature for Tuya API
-async function generateSignature(
-  method: string,
-  url: string,
-  body: string,
-  timestamp: string,
-  nonce: string,
-  accessToken: string = ''
-): Promise<string> {
-  const contentHash = await hashSHA256(body);
-  
-  const stringToSign = [
-    method,
-    contentHash,
-    '',
-    url
-  ].join('\n');
-
-  const signStr = ACCESS_ID + accessToken + timestamp + nonce + stringToSign;
-  const signature = await hmacSHA256(signStr, ACCESS_SECRET!);
-  return signature.toUpperCase();
-}
-
+// SHA256 hash
 async function hashSHA256(str: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(str);
@@ -44,6 +21,7 @@ async function hashSHA256(str: string): Promise<string> {
     .join('');
 }
 
+// HMAC-SHA256
 async function hmacSHA256(message: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secret);
@@ -62,13 +40,36 @@ async function hmacSHA256(message: string, secret: string): Promise<string> {
     .join('');
 }
 
+// Generate signature for Tuya API
+async function generateSignature(
+  method: string,
+  path: string,
+  body: string,
+  timestamp: string,
+  nonce: string,
+  accessToken: string = ''
+): Promise<string> {
+  // Empty body hash
+  const emptyBodyHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+  const contentHash = body ? await hashSHA256(body) : emptyBodyHash;
+  
+  // stringToSign format:
+  // METHOD + "\n" + Content-SHA256 + "\n" + Headers + "\n" + URL
+  const stringToSign = `${method}\n${contentHash}\n\n${path}`;
+  
+  // Sign string format: client_id + access_token + t + nonce + stringToSign
+  const signStr = ACCESS_ID + accessToken + timestamp + nonce + stringToSign;
+  const signature = await hmacSHA256(signStr, ACCESS_SECRET!);
+  return signature.toUpperCase();
+}
+
 // Get access token
 async function getAccessToken(): Promise<string> {
   const timestamp = Date.now().toString();
   const nonce = Math.random().toString(36).substring(7);
-  const url = '/v1.0/token?grant_type=1';
+  const path = '/v1.0/token?grant_type=1';
   
-  const signature = await generateSignature('GET', url, '', timestamp, nonce);
+  const signature = await generateSignature('GET', path, '', timestamp, nonce);
   
   const headers = {
     'client_id': ACCESS_ID!,
@@ -78,7 +79,8 @@ async function getAccessToken(): Promise<string> {
     'nonce': nonce,
   };
 
-  const response = await fetch(`${API_BASE_URL}${url}`, {
+  console.log('Requesting access token...');
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     method: 'GET',
     headers,
   });
@@ -86,16 +88,18 @@ async function getAccessToken(): Promise<string> {
   const data = await response.json();
   
   if (!data.success) {
+    console.error('Failed to get access token:', data);
     throw new Error(`Failed to get access token: ${data.msg}`);
   }
 
+  console.log('Access token obtained successfully');
   return data.result.access_token;
 }
 
 // Make authenticated API request
 async function makeAuthenticatedRequest(
   method: string,
-  url: string,
+  path: string,
   body: any = null,
   accessToken: string
 ): Promise<any> {
@@ -105,22 +109,25 @@ async function makeAuthenticatedRequest(
   
   const signature = await generateSignature(
     method,
-    url,
+    path,
     bodyStr,
     timestamp,
     nonce,
     accessToken
   );
   
-  const headers = {
+  const headers: Record<string, string> = {
     'client_id': ACCESS_ID!,
     'access_token': accessToken,
     'sign': signature,
     't': timestamp,
     'sign_method': 'HMAC-SHA256',
     'nonce': nonce,
-    'Content-Type': 'application/json',
   };
+
+  if (body) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const options: RequestInit = {
     method,
@@ -131,7 +138,8 @@ async function makeAuthenticatedRequest(
     options.body = bodyStr;
   }
 
-  const response = await fetch(`${API_BASE_URL}${url}`, options);
+  console.log('Making request to:', path);
+  const response = await fetch(`${API_BASE_URL}${path}`, options);
   const data = await response.json();
   
   if (!data.success) {
@@ -153,22 +161,18 @@ serve(async (req) => {
 
     // Get access token first
     const accessToken = await getAccessToken();
-    console.log('Access token obtained');
 
     let result;
 
     switch (action) {
       case 'list_devices': {
         // List all devices using the expand devices endpoint with project_id
-        const queryParams = new URLSearchParams({
-          'request.project_id': PROJECT_CODE!,
-          'request.page_no': '1',
-          'request.page_size': '100'
-        });
+        // Query parameters need to be in the URL
+        const path = `/v1.0/expand/devices?request.project_id=${PROJECT_CODE}&request.page_no=1&request.page_size=100`;
         
         const devices = await makeAuthenticatedRequest(
           'GET',
-          `/v1.0/expand/devices?${queryParams.toString()}`,
+          path,
           null,
           accessToken
         );
