@@ -71,9 +71,12 @@ async function generateSignature(
   // Headers is empty (two consecutive \n), URL includes full path with sorted query params
   const stringToSign = `${method}\n${contentHash}\n\n${finalPath}`;
   
-  // CRITICAL: Sign string format is client_id + access_token + timestamp + stringToSign
-  // Note: nonce is NOT included in the signature, only sent as header
-  const signStr = ACCESS_ID + accessToken + timestamp + stringToSign;
+  // CRITICAL FIX: Different signature formats for token vs service operations
+  // For token operations (no access_token): client_id + t + nonce + stringToSign
+  // For service operations (with access_token): client_id + access_token + t + nonce + stringToSign
+  const signStr = accessToken 
+    ? ACCESS_ID + accessToken + timestamp + nonce + stringToSign  // Service operations
+    : ACCESS_ID + timestamp + nonce + stringToSign;              // Token operations
   const signature = await hmacSHA256(signStr, ACCESS_SECRET!);
   
   console.log('Signature debug:', {
