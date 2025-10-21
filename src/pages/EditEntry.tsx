@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Leaf, Plus, X } from 'lucide-react';
 import { PhaseSelector } from '@/components/plants/PhaseSelector';
 import { PlantPhase } from '@/lib/phases';
-import { FileUploader } from '@/components/ui/file-uploader';
+import FileUploader from '@/components/ui/file-uploader';
 
 const EditEntry = () => {
   const { id } = useParams<{ id: string }>();
@@ -175,6 +175,25 @@ const EditEntry = () => {
     }
   };
   
+  const handleMediaUpload = (urls: string[]) => {
+    const photos = urls.filter((url) =>
+      ['.jpg', '.jpeg', '.png', '.gif', '.webp'].some((ext) =>
+        url.toLowerCase().endsWith(ext)
+      )
+    );
+    const videos = urls.filter((url) =>
+      ['.mp4', '.mov', '.avi', '.webm', '.mkv'].some((ext) =>
+        url.toLowerCase().endsWith(ext)
+      )
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+      photos,
+      videos,
+    }));
+  };
+  
   const addNutriente = () => {
     if (newNutriente.nome && newNutriente.quantidade) {
       setFormData({
@@ -287,7 +306,7 @@ const EditEntry = () => {
                   <SelectItem key={tent.id} value={tent.id!.toString()}>
                     {tent.nome}
                   </SelectItem>
-                ))
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -626,15 +645,10 @@ const EditEntry = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Mídia</h3>
             <FileUploader
-              value={[...formData.photos, ...formData.videos]}
-              onValueChange={(files) => {
-                const photos = files.filter(f => f.startsWith('data:image'));
-                const videos = files.filter(f => f.startsWith('data:video'));
-                setFormData({ ...formData, photos, videos });
-              }}
+              onFilesUploaded={handleMediaUpload}
               accept="image/*,video/*"
               maxFiles={10}
-              maxSize={10 * 1024 * 1024}
+              existingFiles={[...formData.photos, ...formData.videos]}
             />
           </div>
           
