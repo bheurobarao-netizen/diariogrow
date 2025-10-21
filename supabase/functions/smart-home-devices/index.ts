@@ -11,14 +11,15 @@ const ACCESS_SECRET = Deno.env.get('SMART_HOME_ACCESS_SECRET');
 const PROJECT_CODE = Deno.env.get('SMART_HOME_PROJECT_CODE');
 const API_BASE_URL = 'https://openapi.tuyaus.com';
 
-// SHA256 hash
+// SHA256 hash - returns lowercase as per Tuya spec
 async function hashSHA256(str: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(str);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(hashBuffer))
     .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+    .join('')
+    .toLowerCase();
 }
 
 // HMAC-SHA256
@@ -53,23 +54,36 @@ async function generateSignature(
   const emptyBodyHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
   const contentHash = body ? await hashSHA256(body) : emptyBodyHash;
   
+  // Parse URL and sort query parameters alphabetically
+  const [pathPart, queryPart] = path.split('?');
+  let finalPath = pathPart;
+  
+  if (queryPart) {
+    // Sort query params alphabetically as per Tuya spec
+    const params = queryPart.split('&')
+      .sort()
+      .join('&');
+    finalPath = `${pathPart}?${params}`;
+  }
+  
   // stringToSign format according to Tuya docs:
   // HTTPMethod + "\n" + Content-SHA256 + "\n" + Headers + "\n" + URL
-  // Headers is empty (two consecutive \n), URL includes full path with query params
-  const stringToSign = `${method}\n${contentHash}\n\n${path}`;
+  // Headers is empty (two consecutive \n), URL includes full path with sorted query params
+  const stringToSign = `${method}\n${contentHash}\n\n${finalPath}`;
   
-  console.log('Signature components:', {
-    method,
-    contentHash,
-    path,
-    stringToSign
-  });
-  
-  // Sign string format: client_id + access_token + timestamp + nonce + stringToSign
-  const signStr = ACCESS_ID + accessToken + timestamp + nonce + stringToSign;
+  // CRITICAL: Sign string format is client_id + access_token + timestamp + stringToSign
+  // Note: nonce is NOT included in the signature, only sent as header
+  const signStr = ACCESS_ID + accessToken + timestamp + stringToSign;
   const signature = await hmacSHA256(signStr, ACCESS_SECRET!);
   
-  console.log('Generated signature:', signature.toUpperCase());
+  console.log('Signature debug:', {
+    method,
+    contentHash,
+    finalPath,
+    stringToSignLength: stringToSign.length,
+    signStrPrefix: `${ACCESS_ID}[${accessToken ? 'token' : 'no-token'}]${timestamp}`,
+    signaturePrefix: signature.substring(0, 20).toUpperCase() + '...'
+  });
   
   return signature.toUpperCase();
 }
