@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Plus, Images, BarChart3, LogOut, Sprout } from 'lucide-react';
+import { Home, Calendar, Plus, Images, BarChart3, LogOut, Sprout, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/lineage', icon: Sprout, label: 'Linhagem' },
     { path: '/new', icon: Plus, label: 'Adicionar' },
     { path: '/tents', icon: Home, label: 'Tendas' },
-    { path: '/stats', icon: BarChart3, label: 'Stats' },
+    { path: '/insumos', icon: Package, label: 'Insumos' },
   ];
 
   const handleLogout = async () => {

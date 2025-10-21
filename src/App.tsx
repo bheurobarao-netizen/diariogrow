@@ -18,6 +18,11 @@ import Tents from "./pages/Tents";
 import NewTent from "./pages/NewTent";
 import EditTent from "./pages/EditTent";
 import Lineage from "./pages/Lineage";
+import Insumos from "./pages/Insumos";
+import NewInsumo from "./pages/NewInsumo";
+import EditInsumo from "./pages/EditInsumo";
+import EntryDetail from "./pages/EntryDetail";
+import EditEntry from "./pages/EditEntry";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -189,6 +194,66 @@ const App = () => {
                 session ? (
                   <Layout>
                     <Lineage />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/insumos"
+              element={
+                session ? (
+                  <Layout>
+                    <Insumos />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/insumos/new"
+              element={
+                session ? (
+                  <Layout>
+                    <NewInsumo />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/insumos/edit/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EditInsumo />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/entry/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EntryDetail />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/entry/edit/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EditEntry />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
