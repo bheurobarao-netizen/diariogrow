@@ -255,7 +255,6 @@ const NewEntry = () => {
                     <SelectValue placeholder="Selecione uma tenda" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50">
-                    <SelectItem value="">Nenhuma</SelectItem>
                     {tents.map((tent) => (
                       <SelectItem key={tent.id} value={tent.id!.toString()}>
                         {tent.nome}
