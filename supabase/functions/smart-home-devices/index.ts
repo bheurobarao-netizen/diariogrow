@@ -49,17 +49,28 @@ async function generateSignature(
   nonce: string,
   accessToken: string = ''
 ): Promise<string> {
-  // Empty body hash
+  // Empty body hash for GET requests or empty POST body
   const emptyBodyHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
   const contentHash = body ? await hashSHA256(body) : emptyBodyHash;
   
-  // stringToSign format:
-  // METHOD + "\n" + Content-SHA256 + "\n" + Headers + "\n" + URL
+  // stringToSign format according to Tuya docs:
+  // HTTPMethod + "\n" + Content-SHA256 + "\n" + Headers + "\n" + URL
+  // Headers is empty (two consecutive \n), URL includes full path with query params
   const stringToSign = `${method}\n${contentHash}\n\n${path}`;
   
-  // Sign string format: client_id + access_token + t + nonce + stringToSign
+  console.log('Signature components:', {
+    method,
+    contentHash,
+    path,
+    stringToSign
+  });
+  
+  // Sign string format: client_id + access_token + timestamp + nonce + stringToSign
   const signStr = ACCESS_ID + accessToken + timestamp + nonce + stringToSign;
   const signature = await hmacSHA256(signStr, ACCESS_SECRET!);
+  
+  console.log('Generated signature:', signature.toUpperCase());
+  
   return signature.toUpperCase();
 }
 
