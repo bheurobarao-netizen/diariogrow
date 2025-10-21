@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { usePlantStore } from '@/stores/plantStore';
 import { useTentStore } from '@/stores/tentStore';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { PlantPhase } from '@/lib/phases';
 
 const NewPlant = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { createPlant, getMotherPlants } = usePlantStore();
   const { tents, fetchTents } = useTentStore();
   const { toast } = useToast();
@@ -28,8 +29,8 @@ const NewPlant = () => {
     apelido: '',
     especie: '',
     bancoSementes: '',
-    origem: 'semente' as 'semente' | 'clone',
-    maeId: undefined as number | undefined,
+    origem: (searchParams.get('origem') || 'semente') as 'semente' | 'clone',
+    maeId: searchParams.get('maeId') ? Number(searchParams.get('maeId')) : undefined,
     indica: 50,
     sativa: 50,
     ruderalis: 0,

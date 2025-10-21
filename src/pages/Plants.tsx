@@ -3,7 +3,7 @@ import { usePlantStore } from '@/stores/plantStore';
 import { useTentStore } from '@/stores/tentStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Leaf, Plus, QrCode, Printer, Pencil, Trash2 } from 'lucide-react';
+import { Leaf, Plus, QrCode, Printer, Pencil, Trash2, Copy, GitBranch } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { getPhaseLabel } from '@/lib/phases';
@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const Plants = () => {
   const navigate = useNavigate();
-  const { plants, fetchPlants, deletePlant, loading } = usePlantStore();
+  const { plants, fetchPlants, deletePlant, loading, createPlant } = usePlantStore();
   const { tents, fetchTents } = useTentStore();
   const [showQR, setShowQR] = useState<number | null>(null);
   const { toast } = useToast();
@@ -57,6 +57,34 @@ const Plants = () => {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleDuplicate = async (plant: Plant, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const { id, codigo, qrCodeData, createdAt, updatedAt, ...plantData } = plant;
+      await createPlant({
+        ...plantData,
+        apelido: `${plant.apelido} (Cópia)`,
+      });
+      toast({
+        title: 'Planta duplicada',
+        description: 'Uma cópia da planta foi criada com sucesso',
+      });
+    } catch (error) {
+      console.error('Error duplicating plant:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível duplicar a planta',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleCreateClone = (motherId: number) => {
+    navigate(`/plants/new?origem=clone&maeId=${motherId}`);
   };
   
   const printLabel = (plant: Plant) => {
@@ -241,7 +269,23 @@ const Plants = () => {
                         )}
                       </div>
                     </Link>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCreateClone(plant.id!)}
+                        title="Criar Clone"
+                      >
+                        <GitBranch className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => handleDuplicate(plant, e)}
+                        title="Duplicar"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
