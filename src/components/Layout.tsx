@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf } from 'lucide-react';
+import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,10 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/stats', icon: BarChart3, label: 'Stats' },
     { path: '/plants', icon: Sprout, label: 'Plantas' },
     { path: '/new', icon: Plus, label: 'Adicionar' },
+    { path: '/calendar', icon: Calendar, label: 'Calendário' },
+    { path: '/tents', icon: TreeDeciduous, label: 'Tendas' },
     { path: '/colheitas', icon: Leaf, label: 'Colheitas' },
+    { path: '/insumos', icon: Package, label: 'Insumos' },
   ];
 
   const handleLogout = async () => {
@@ -60,8 +63,8 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-elegant">
-        <div className="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-elegant overflow-x-auto">
+        <div className="flex justify-start items-center h-16 max-w-full px-2 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -73,8 +76,8 @@ const Layout = ({ children }: LayoutProps) => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    'flex flex-col items-center justify-center transition-smooth',
-                    '-mt-8'
+                    'flex flex-col items-center justify-center transition-smooth flex-shrink-0',
+                    '-mt-8 mx-2'
                   )}
                 >
                   <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center shadow-glow">
@@ -89,14 +92,14 @@ const Layout = ({ children }: LayoutProps) => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-smooth',
+                  'flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-lg transition-smooth flex-shrink-0 min-w-[60px]',
                   isActive
                     ? 'text-primary'
                     : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 <Icon className={cn('w-5 h-5', isActive && 'scale-110')} />
-                <span className="text-xs font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium whitespace-nowrap">{item.label}</span>
               </Link>
             );
           })}
