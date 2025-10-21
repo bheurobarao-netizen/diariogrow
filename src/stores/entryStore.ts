@@ -32,6 +32,12 @@ export const useEntryStore = create<EntryState>((set) => ({
     const now = new Date().toISOString();
     const entry: Entry = {
       ...entryData,
+      nutrientesAplicados: entryData.nutrientesAplicados || [],
+      acoesRealizadas: entryData.acoesRealizadas || [],
+      problemasObservados: entryData.problemasObservados || [],
+      acoesCorretivas: entryData.acoesCorretivas || [],
+      photos: entryData.photos || [],
+      videos: entryData.videos || [],
       createdAt: now,
       updatedAt: now,
     };

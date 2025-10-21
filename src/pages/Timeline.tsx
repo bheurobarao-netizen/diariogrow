@@ -102,21 +102,21 @@ const Timeline = () => {
                     )}
                     
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      {entry.temperatura && (
+                      {entry.temperaturaMin && entry.temperaturaMax && (
                         <div className="flex items-center gap-1">
                           <Thermometer className="w-3 h-3" />
-                          {entry.temperatura}°C
+                          {entry.temperaturaMin}-{entry.temperaturaMax}°C
                         </div>
                       )}
-                      {entry.umidade && (
+                      {entry.umidadeMin && entry.umidadeMax && (
                         <div className="flex items-center gap-1">
                           <Droplets className="w-3 h-3" />
-                          {entry.umidade}%
+                          {entry.umidadeMin}-{entry.umidadeMax}%
                         </div>
                       )}
-                      {entry.ph && (
+                      {entry.phAguaEntrada && (
                         <div className="flex items-center gap-1">
-                          pH {entry.ph}
+                          pH {entry.phAguaEntrada}
                         </div>
                       )}
                     </div>

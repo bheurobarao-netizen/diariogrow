@@ -14,6 +14,45 @@ export interface Tent {
     chipLed: string;
     driverLed: string;
   };
+  outrosEquipamentos?: string;
+  observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Insumo {
+  id?: number;
+  nomeProduto: string;
+  marca?: string;
+  tipo: 'nutriente' | 'suplemento' | 'pesticida' | 'substrato' | 'outro';
+  observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Colheita {
+  id?: number;
+  plantId: number;
+  dataColheita: string;
+  pesoUmidoManicurado?: number;
+  dataInicioSecagem?: string;
+  dataFimSecagem?: string;
+  pesoSecoFinal?: number;
+  observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Cura {
+  id?: number;
+  colheitaId: number;
+  poteNome: string;
+  pesoPote?: number;
+  burpingRegistros: Array<{
+    data: string;
+    umidadePote?: number;
+    notasAroma?: string;
+  }>;
   observacoes?: string;
   createdAt: string;
   updatedAt: string;
@@ -51,21 +90,40 @@ export interface Entry {
   id?: number;
   date: string;
   plantId?: number;
+  tentId?: number;
   fase?: PlantPhase;
-  estufa?: string;
-  cepa?: string;
+  
+  // Ambiente
+  temperaturaMin?: number;
+  temperaturaMax?: number;
+  umidadeMin?: number;
+  umidadeMax?: number;
+  distanciaLuzCm?: number;
+  
+  // Solução Nutritiva
+  phAguaEntrada?: number;
+  ecAguaEntrada?: number;
+  volumeTotalLitros?: number;
+  phAguaSaida?: number;
+  ecAguaSaida?: number;
+  
+  // Nutrientes aplicados
+  nutrientesAplicados: Array<{
+    nomeNutriente: string;
+    quantidade: number;
+    unidade: 'g' | 'ml';
+  }>;
+  
+  // Ações e Saúde
+  acoesRealizadas: string[];
+  problemasObservados: string[];
+  acoesCorretivas: string[];
+  
+  // Mídia e observações
   content: string;
   photos: string[];
   videos: string[];
-  nutrientes?: string;
-  ec?: number;
-  ph?: number;
-  temperatura?: number;
-  umidade?: number;
-  luz?: string;
-  checklist: string[];
-  problemas: string[];
-  solucoes: string[];
+  
   createdAt: string;
   updatedAt: string;
 }
@@ -83,6 +141,9 @@ export class GrowDiaryDB extends Dexie {
   entries!: Table<Entry>;
   sharedLinks!: Table<SharedLink>;
   tents!: Table<Tent>;
+  insumos!: Table<Insumo>;
+  colheitas!: Table<Colheita>;
+  curas!: Table<Cura>;
 
   constructor() {
     super('GrowDiaryDB');
@@ -105,6 +166,17 @@ export class GrowDiaryDB extends Dexie {
       entries: '++id, date, plantId, fase, createdAt',
       sharedLinks: '++id, token, entryId, expiresAt',
       tents: '++id, nome, createdAt'
+    });
+    
+    // Version 4: Add insumos, colheitas, curas and update entries
+    this.version(4).stores({
+      plants: '++id, codigo, maeId, origem, tentId, viva, createdAt',
+      entries: '++id, date, plantId, tentId, fase, createdAt',
+      sharedLinks: '++id, token, entryId, expiresAt',
+      tents: '++id, nome, createdAt',
+      insumos: '++id, nomeProduto, tipo, createdAt',
+      colheitas: '++id, plantId, dataColheita, createdAt',
+      curas: '++id, colheitaId, poteNome, createdAt'
     });
   }
 }
