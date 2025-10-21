@@ -158,10 +158,11 @@ serve(async (req) => {
 
     switch (action) {
       case 'list_devices': {
-        // List all devices
+        // List all devices using the IoT project endpoint
+        // The endpoint requires page_no and page_size parameters
         const devices = await makeAuthenticatedRequest(
           'GET',
-          '/v1.0/devices',
+          '/v1.0/iot-03/devices?page_no=1&page_size=100',
           null,
           accessToken
         );
