@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous, Zap } from 'lucide-react';
+import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous, Zap, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/calendar', icon: Calendar, label: 'Calendário' },
     { path: '/tents', icon: TreeDeciduous, label: 'Tendas' },
     { path: '/equipment', icon: Zap, label: 'Equipamentos' },
+    { path: '/smart-home', icon: Smartphone, label: 'Smart Home' },
     { path: '/colheitas', icon: Leaf, label: 'Colheitas' },
     { path: '/insumos', icon: Package, label: 'Insumos' },
   ];

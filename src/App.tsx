@@ -31,6 +31,7 @@ import Stats from "./pages/Stats";
 import Equipment from "./pages/Equipment";
 import NewEquipment from "./pages/NewEquipment";
 import EditEquipment from "./pages/EditEquipment";
+import SmartHome from "./pages/SmartHome";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -358,6 +359,18 @@ const App = () => {
                 session ? (
                   <Layout>
                     <Stats />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/smart-home"
+              element={
+                session ? (
+                  <Layout>
+                    <SmartHome />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
