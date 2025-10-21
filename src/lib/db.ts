@@ -71,6 +71,8 @@ export interface Plant {
   };
   origem: 'semente' | 'clone';
   maeId?: number;
+  paiId?: number; // NEW: Para breeding
+  breedingEventId?: number; // NEW: Vincula à breeding event que gerou esta planta
   geracao: number;
   faseAtual?: PlantPhase;
   metodoAtual?: string;
@@ -136,6 +138,29 @@ export interface SharedLink {
   createdAt: string;
 }
 
+export interface Task {
+  id?: number;
+  title: string;
+  details?: string;
+  dueDate: string;
+  isComplete: boolean;
+  plantId?: number;
+  tentId?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BreedingEvent {
+  id?: number;
+  dataCruzamento: string;
+  maeId: number;
+  paiId: number;
+  tipoResultado: 'semente' | 'polen';
+  notas?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export class GrowDiaryDB extends Dexie {
   plants!: Table<Plant>;
   entries!: Table<Entry>;
@@ -144,6 +169,8 @@ export class GrowDiaryDB extends Dexie {
   insumos!: Table<Insumo>;
   colheitas!: Table<Colheita>;
   curas!: Table<Cura>;
+  tasks!: Table<Task>;
+  breedingEvents!: Table<BreedingEvent>;
 
   constructor() {
     super('GrowDiaryDB');
@@ -177,6 +204,19 @@ export class GrowDiaryDB extends Dexie {
       insumos: '++id, nomeProduto, tipo, createdAt',
       colheitas: '++id, plantId, dataColheita, createdAt',
       curas: '++id, colheitaId, poteNome, createdAt'
+    });
+    
+    // Version 5: Add tasks, breedingEvents and update plants with paiId
+    this.version(5).stores({
+      plants: '++id, codigo, maeId, paiId, origem, tentId, viva, createdAt',
+      entries: '++id, date, plantId, tentId, fase, createdAt',
+      sharedLinks: '++id, token, entryId, expiresAt',
+      tents: '++id, nome, createdAt',
+      insumos: '++id, nomeProduto, tipo, createdAt',
+      colheitas: '++id, plantId, dataColheita, createdAt',
+      curas: '++id, colheitaId, poteNome, createdAt',
+      tasks: '++id, dueDate, isComplete, plantId, tentId, createdAt',
+      breedingEvents: '++id, dataCruzamento, maeId, paiId, createdAt'
     });
   }
 }
