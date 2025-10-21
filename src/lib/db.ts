@@ -23,6 +23,8 @@ export interface Equipment {
   consumoWatts: number;
   numeroTomadas: number;
   smartLife: boolean;
+  smartLifeControlType?: 'tomada' | 'dimmer';
+  smartLifeControlModel?: string;
   notas?: string;
   createdAt: string;
   updatedAt: string;

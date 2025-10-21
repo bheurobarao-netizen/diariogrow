@@ -143,6 +143,11 @@ const Equipment = () => {
                               Smart Life
                             </Badge>
                           )}
+                          {!item.smartLife && item.smartLifeControlType && (
+                            <Badge variant="outline" className="text-xs">
+                              {item.smartLifeControlType === 'tomada' ? 'Tomada' : 'Dimmer'} Smart Life
+                            </Badge>
+                          )}
                         </div>
                       </div>
 
@@ -156,6 +161,12 @@ const Equipment = () => {
                           <p className="font-medium">{item.numeroTomadas}</p>
                         </div>
                       </div>
+
+                      {!item.smartLife && item.smartLifeControlModel && (
+                        <div className="text-xs text-muted-foreground">
+                          <span className="font-medium">Controle:</span> {item.smartLifeControlModel}
+                        </div>
+                      )}
 
                       {item.notas && (
                         <p className="text-sm text-muted-foreground line-clamp-2">

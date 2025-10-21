@@ -37,6 +37,8 @@ const equipmentSchema = z.object({
   consumoWatts: z.coerce.number().optional(),
   numeroTomadas: z.coerce.number().optional(),
   smartLife: z.boolean().default(false),
+  smartLifeControlType: z.enum(['tomada', 'dimmer']).optional(),
+  smartLifeControlModel: z.string().optional(),
   notas: z.string().optional(),
 });
 
@@ -60,9 +62,13 @@ const EditEquipment = () => {
       consumoWatts: 0,
       numeroTomadas: 1,
       smartLife: false,
+      smartLifeControlType: undefined,
+      smartLifeControlModel: '',
       notas: '',
     },
   });
+
+  const watchSmartLife = form.watch('smartLife');
 
   useEffect(() => {
     fetchTents();
@@ -83,6 +89,8 @@ const EditEquipment = () => {
             consumoWatts: equipment.consumoWatts,
             numeroTomadas: equipment.numeroTomadas,
             smartLife: equipment.smartLife || false,
+            smartLifeControlType: equipment.smartLifeControlType,
+            smartLifeControlModel: equipment.smartLifeControlModel,
             notas: equipment.notas,
           });
         }
@@ -113,6 +121,8 @@ const EditEquipment = () => {
         consumoWatts: data.consumoWatts || 0,
         numeroTomadas: data.numeroTomadas || 1,
         smartLife: data.smartLife || false,
+        smartLifeControlType: data.smartLifeControlType,
+        smartLifeControlModel: data.smartLifeControlModel,
         notas: data.notas,
       });
 
@@ -295,6 +305,51 @@ const EditEquipment = () => {
                 </FormItem>
               )}
             />
+
+            {/* Smart Life Control - Only show if smartLife is false */}
+            {!watchSmartLife && (
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                <h3 className="font-medium text-sm">Controle Smart Life</h3>
+                <FormField
+                  control={form.control}
+                  name="smartLifeControlType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Controle</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo de controle" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="tomada">Tomada Smart Life</SelectItem>
+                          <SelectItem value="dimmer">Dimmer Smart Life</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="smartLifeControlModel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Modelo do Controle</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: TP-Link HS100, Sonoff..." {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Modelo da tomada ou dimmer Smart Life
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
 
             {/* Notas */}
             <FormField
