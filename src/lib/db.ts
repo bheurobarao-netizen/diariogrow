@@ -22,6 +22,7 @@ export interface Equipment {
   tentId: number;
   consumoWatts: number;
   numeroTomadas: number;
+  smartLife: boolean;
   notas?: string;
   createdAt: string;
   updatedAt: string;

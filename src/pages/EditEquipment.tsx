@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEquipmentStore } from '@/stores/equipmentStore';
 import { useTentStore } from '@/stores/tentStore';
 import { Card } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Form,
   FormControl,
@@ -42,15 +42,13 @@ const equipmentSchema = z.object({
 
 type EquipmentFormData = z.infer<typeof equipmentSchema>;
 
-const NewEquipment = () => {
+const EditEquipment = () => {
   const navigate = useNavigate();
-  const { createEquipment } = useEquipmentStore();
+  const { id } = useParams<{ id: string }>();
+  const { getEquipment, updateEquipment } = useEquipmentStore();
   const { tents, fetchTents } = useTentStore();
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchTents();
-  }, [fetchTents]);
+  const [loading, setLoading] = useState(true);
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentSchema),
@@ -66,9 +64,48 @@ const NewEquipment = () => {
     },
   });
 
+  useEffect(() => {
+    fetchTents();
+  }, [fetchTents]);
+
+  useEffect(() => {
+    const loadEquipment = async () => {
+      if (!id) return;
+      
+      try {
+        const equipment = await getEquipment(Number(id));
+        if (equipment) {
+          form.reset({
+            nome: equipment.nome,
+            marca: equipment.marca,
+            tipo: equipment.tipo,
+            tentId: equipment.tentId,
+            consumoWatts: equipment.consumoWatts,
+            numeroTomadas: equipment.numeroTomadas,
+            smartLife: equipment.smartLife || false,
+            notas: equipment.notas,
+          });
+        }
+      } catch (error) {
+        console.error('Error loading equipment:', error);
+        toast({
+          title: 'Erro',
+          description: 'Não foi possível carregar o equipamento',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEquipment();
+  }, [id, getEquipment, form, toast]);
+
   const onSubmit = async (data: EquipmentFormData) => {
+    if (!id) return;
+
     try {
-      await createEquipment({
+      await updateEquipment(Number(id), {
         nome: data.nome || '',
         marca: data.marca,
         tipo: data.tipo || 'iluminacao',
@@ -81,19 +118,27 @@ const NewEquipment = () => {
 
       toast({
         title: 'Sucesso',
-        description: 'Equipamento criado com sucesso!',
+        description: 'Equipamento atualizado com sucesso!',
       });
 
       navigate('/equipment');
     } catch (error) {
-      console.error('Error creating equipment:', error);
+      console.error('Error updating equipment:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível criar o equipamento',
+        description: 'Não foi possível atualizar o equipamento',
         variant: 'destructive',
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-muted-foreground">Carregando...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -107,8 +152,8 @@ const NewEquipment = () => {
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </Button>
-        <h1 className="text-3xl font-bold text-primary">Novo Equipamento</h1>
-        <p className="text-muted-foreground mt-1">Cadastre um novo equipamento</p>
+        <h1 className="text-3xl font-bold text-primary">Editar Equipamento</h1>
+        <p className="text-muted-foreground mt-1">Atualize as informações do equipamento</p>
       </div>
 
       <Card className="p-6">
@@ -151,7 +196,7 @@ const NewEquipment = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tipo</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione o tipo" />
@@ -178,7 +223,7 @@ const NewEquipment = () => {
                   <FormLabel>Alocar na Tenda</FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(Number(value))}
-                    defaultValue={field.value?.toString()}
+                    value={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -281,7 +326,7 @@ const NewEquipment = () => {
               </Button>
               <Button type="submit" className="flex-1 gradient-primary gap-2">
                 <Save className="w-4 h-4" />
-                Criar Equipamento
+                Salvar Alterações
               </Button>
             </div>
           </form>
@@ -291,4 +336,4 @@ const NewEquipment = () => {
   );
 };
 
-export default NewEquipment;
+export default EditEquipment;

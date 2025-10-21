@@ -134,9 +134,16 @@ const Equipment = () => {
                             <p className="text-sm text-muted-foreground">{item.marca}</p>
                           )}
                         </div>
-                        <span className="px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-medium">
-                          {getTipoLabel(item.tipo)}
-                        </span>
+                        <div className="flex flex-col gap-1 items-end">
+                          <span className="px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-medium">
+                            {getTipoLabel(item.tipo)}
+                          </span>
+                          {item.smartLife && (
+                            <Badge variant="secondary" className="text-xs">
+                              Smart Life
+                            </Badge>
+                          )}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-sm">

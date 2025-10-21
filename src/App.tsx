@@ -30,6 +30,7 @@ import Calendar from "./pages/Calendar";
 import Stats from "./pages/Stats";
 import Equipment from "./pages/Equipment";
 import NewEquipment from "./pages/NewEquipment";
+import EditEquipment from "./pages/EditEquipment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -321,6 +322,18 @@ const App = () => {
                 session ? (
                   <Layout>
                     <NewEquipment />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/equipment/edit/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EditEquipment />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
