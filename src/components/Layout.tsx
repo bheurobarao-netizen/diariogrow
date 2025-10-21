@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Plus, Images, BarChart3, LogOut } from 'lucide-react';
+import { Home, Calendar, Plus, Images, BarChart3, LogOut, Sprout } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
   
   const navItems = [
     { path: '/', icon: Home, label: 'Início' },
-    { path: '/calendar', icon: Calendar, label: 'Calendário' },
+    { path: '/tents', icon: Sprout, label: 'Tendas' },
     { path: '/new', icon: Plus, label: 'Adicionar' },
     { path: '/gallery', icon: Images, label: 'Galeria' },
     { path: '/stats', icon: BarChart3, label: 'Stats' },

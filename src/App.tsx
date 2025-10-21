@@ -14,6 +14,9 @@ import PlantDetail from "./pages/PlantDetail";
 import NewPlant from "./pages/NewPlant";
 import EditPlant from "./pages/EditPlant";
 import NewEntry from "./pages/NewEntry";
+import Tents from "./pages/Tents";
+import NewTent from "./pages/NewTent";
+import EditTent from "./pages/EditTent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -137,6 +140,42 @@ const App = () => {
                 session ? (
                   <Layout>
                     <NewEntry />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/tents"
+              element={
+                session ? (
+                  <Layout>
+                    <Tents />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/tents/new"
+              element={
+                session ? (
+                  <Layout>
+                    <NewTent />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/tents/edit/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EditTent />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />

@@ -3,6 +3,22 @@ import { PlantPhase } from './phases';
 
 export type { PlantPhase };
 
+export interface Tent {
+  id?: number;
+  nome: string;
+  alturaCm: number;
+  profundidadeCm: number;
+  cumprimentoCm: number;
+  iluminacao: {
+    totalWatts: number;
+    chipLed: string;
+    driverLed: string;
+  };
+  observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Plant {
   id?: number;
   codigo: string;
@@ -26,6 +42,7 @@ export interface Plant {
   viva: boolean;
   qrCodeData?: string;
   observacoes?: string;
+  tentId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +82,7 @@ export class GrowDiaryDB extends Dexie {
   plants!: Table<Plant>;
   entries!: Table<Entry>;
   sharedLinks!: Table<SharedLink>;
+  tents!: Table<Tent>;
 
   constructor() {
     super('GrowDiaryDB');
@@ -79,6 +97,14 @@ export class GrowDiaryDB extends Dexie {
       plants: '++id, codigo, maeId, origem, viva, createdAt',
       entries: '++id, date, plantId, fase, createdAt',
       sharedLinks: '++id, token, entryId, expiresAt'
+    });
+    
+    // Version 3: Add tents table and tentId to plants
+    this.version(3).stores({
+      plants: '++id, codigo, maeId, origem, tentId, viva, createdAt',
+      entries: '++id, date, plantId, fase, createdAt',
+      sharedLinks: '++id, token, entryId, expiresAt',
+      tents: '++id, nome, createdAt'
     });
   }
 }

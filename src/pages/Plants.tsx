@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usePlantStore } from '@/stores/plantStore';
+import { useTentStore } from '@/stores/tentStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Leaf, Plus, QrCode, Printer, Pencil } from 'lucide-react';
@@ -11,11 +12,19 @@ import { Plant } from '@/lib/db';
 const Plants = () => {
   const navigate = useNavigate();
   const { plants, fetchPlants, loading } = usePlantStore();
+  const { tents, fetchTents } = useTentStore();
   const [showQR, setShowQR] = useState<number | null>(null);
   
   useEffect(() => {
     fetchPlants();
-  }, [fetchPlants]);
+    fetchTents();
+  }, [fetchPlants, fetchTents]);
+  
+  const getTentName = (tentId?: number) => {
+    if (!tentId) return null;
+    const tent = tents.find((t) => t.id === tentId);
+    return tent?.nome;
+  };
   
   const printLabel = (plant: Plant) => {
     const printWindow = window.open('', '_blank');
@@ -172,6 +181,11 @@ const Plants = () => {
                         {plant.especie}
                         {plant.bancoSementes && ` • ${plant.bancoSementes}`}
                       </p>
+                      {getTentName(plant.tentId) && (
+                        <p className="text-sm text-primary/80 mb-2">
+                          📍 {getTentName(plant.tentId)}
+                        </p>
+                      )}
                       {plant.faseAtual && (
                         <div className="mb-2">
                           <Badge variant="default" className="text-xs">
@@ -252,6 +266,11 @@ const Plants = () => {
                           {mother && (
                             <p className="text-sm text-muted-foreground mb-2">
                               Clone de: {mother.apelido} ({mother.codigo})
+                            </p>
+                          )}
+                          {getTentName(clone.tentId) && (
+                            <p className="text-sm text-primary/80 mb-2">
+                              📍 {getTentName(clone.tentId)}
                             </p>
                           )}
                           {clone.faseAtual && (

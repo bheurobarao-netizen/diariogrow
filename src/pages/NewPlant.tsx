@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlantStore } from '@/stores/plantStore';
+import { useTentStore } from '@/stores/tentStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Leaf } from 'lucide-react';
 import { PhaseSelector } from '@/components/plants/PhaseSelector';
@@ -15,7 +17,12 @@ import { PlantPhase } from '@/lib/phases';
 const NewPlant = () => {
   const navigate = useNavigate();
   const { createPlant } = usePlantStore();
+  const { tents, fetchTents } = useTentStore();
   const { toast } = useToast();
+  
+  useEffect(() => {
+    fetchTents();
+  }, [fetchTents]);
   
   const [formData, setFormData] = useState({
     apelido: '',
@@ -32,6 +39,7 @@ const NewPlant = () => {
     seraMae: false,
     dataGerminacao: '',
     dataNascimento: '',
+    tentId: undefined as number | undefined,
   });
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,6 +66,7 @@ const NewPlant = () => {
         viva: true,
         dataGerminacao: formData.dataGerminacao || undefined,
         dataNascimento: formData.dataNascimento || undefined,
+        tentId: formData.tentId,
       };
       
       console.log('Creating plant:', plantToCreate);
@@ -211,6 +220,28 @@ const NewPlant = () => {
             onPhaseChange={(phase) => setFormData({ ...formData, faseAtual: phase, metodoAtual: '' })}
             onMethodChange={(method) => setFormData({ ...formData, metodoAtual: method })}
           />
+          
+          <div className="space-y-2">
+            <Label htmlFor="tent">Alocar na Tenda</Label>
+            <Select
+              value={formData.tentId?.toString()}
+              onValueChange={(value) =>
+                setFormData({ ...formData, tentId: value ? Number(value) : undefined })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione uma tenda (opcional)" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="">Nenhuma tenda</SelectItem>
+                {tents.map((tent) => (
+                  <SelectItem key={tent.id} value={tent.id!.toString()}>
+                    {tent.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
           <div className="space-y-2">
             <Label htmlFor="fenotipo">Notas de Fenótipo</Label>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { usePlantStore } from '@/stores/plantStore';
+import { useTentStore } from '@/stores/tentStore';
 import { useEntryStore } from '@/stores/entryStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,9 +16,14 @@ const PlantDetail = () => {
   const navigate = useNavigate();
   const { getPlant } = usePlantStore();
   const { getEntriesByPlant } = useEntryStore();
+  const { tents, fetchTents } = useTentStore();
   const [plant, setPlant] = useState<Plant | null>(null);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTents();
+  }, [fetchTents]);
 
   useEffect(() => {
     const loadPlantData = async () => {
@@ -40,6 +46,12 @@ const PlantDetail = () => {
 
     loadPlantData();
   }, [id, getPlant, getEntriesByPlant]);
+  
+  const getTentName = (tentId?: number) => {
+    if (!tentId) return null;
+    const tent = tents.find((t) => t.id === tentId);
+    return tent?.nome;
+  };
 
   if (loading) {
     return (
@@ -148,6 +160,12 @@ const PlantDetail = () => {
 
         {/* Additional Info */}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+          {plant.tentId && getTentName(plant.tentId) && (
+            <div className="col-span-2">
+              <p className="text-sm text-muted-foreground">Local</p>
+              <p className="font-medium">📍 {getTentName(plant.tentId)}</p>
+            </div>
+          )}
           <div>
             <p className="text-sm text-muted-foreground">Origem</p>
             <p className="font-medium capitalize">{plant.origem}</p>
