@@ -64,7 +64,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-elegant overflow-x-auto">
-        <div className="flex justify-start items-center h-16 max-w-full px-2 gap-1">
+        <div className="flex justify-center items-center h-16 w-full px-2 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
