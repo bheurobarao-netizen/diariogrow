@@ -18,7 +18,20 @@ export interface Equipment {
   id?: number;
   nome: string;
   marca?: string;
-  tipo: 'iluminacao' | 'climatizacao' | 'irrigacao' | 'outro';
+  tipo: 'climatizacao_exaustor' | 'climatizacao_intrator' | 'climatizacao_filtro' | 'climatizacao_ventilador' |
+    'climatizacao_ar_condicionado' | 'climatizacao_umidificador' | 'climatizacao_desumidificador' |
+    'climatizacao_aquecedor' | 'climatizacao_duto' | 'climatizacao_controlador' |
+    'iluminacao_led' | 'iluminacao_hps' | 'iluminacao_mh' | 'iluminacao_cmh' | 'iluminacao_fluorescente' |
+    'iluminacao_reator' | 'iluminacao_refletor' | 'iluminacao_timer' | 'iluminacao_medidor' |
+    'irrigacao_bomba_agua' | 'irrigacao_bomba_ar' | 'irrigacao_pedra_porosa' | 'irrigacao_gotejamento' |
+    'irrigacao_reservatorio' | 'irrigacao_filtro' | 'irrigacao_chiller' | 'irrigacao_medidor_ph' |
+    'irrigacao_medidor_ec' | 'irrigacao_dosadora' |
+    'estrutura_tenda' | 'estrutura_vaso' | 'estrutura_hidroponico' | 'estrutura_bandeja' |
+    'estrutura_rede_scrog' | 'estrutura_suporte' |
+    'germinacao_domo' | 'germinacao_bandeja' | 'germinacao_manta' | 'germinacao_clone_machine' |
+    'germinacao_tesoura' |
+    'sensor_temp_umidade' | 'sensor_nivel_agua' | 'sensor_ph' | 'sensor_co2' | 'sensor_camera' |
+    'iluminacao' | 'climatizacao' | 'irrigacao' | 'outro'; // Legado
   tentId: number;
   consumoWatts: number;
   numeroTomadas: number;

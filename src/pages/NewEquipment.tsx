@@ -32,7 +32,22 @@ import {
 const equipmentSchema = z.object({
   nome: z.string().optional(),
   marca: z.string().optional(),
-  tipo: z.enum(['iluminacao', 'climatizacao', 'irrigacao', 'outro']).optional(),
+  tipo: z.enum([
+    'climatizacao_exaustor', 'climatizacao_intrator', 'climatizacao_filtro', 'climatizacao_ventilador',
+    'climatizacao_ar_condicionado', 'climatizacao_umidificador', 'climatizacao_desumidificador',
+    'climatizacao_aquecedor', 'climatizacao_duto', 'climatizacao_controlador',
+    'iluminacao_led', 'iluminacao_hps', 'iluminacao_mh', 'iluminacao_cmh', 'iluminacao_fluorescente',
+    'iluminacao_reator', 'iluminacao_refletor', 'iluminacao_timer', 'iluminacao_medidor',
+    'irrigacao_bomba_agua', 'irrigacao_bomba_ar', 'irrigacao_pedra_porosa', 'irrigacao_gotejamento',
+    'irrigacao_reservatorio', 'irrigacao_filtro', 'irrigacao_chiller', 'irrigacao_medidor_ph',
+    'irrigacao_medidor_ec', 'irrigacao_dosadora',
+    'estrutura_tenda', 'estrutura_vaso', 'estrutura_hidroponico', 'estrutura_bandeja',
+    'estrutura_rede_scrog', 'estrutura_suporte',
+    'germinacao_domo', 'germinacao_bandeja', 'germinacao_manta', 'germinacao_clone_machine',
+    'germinacao_tesoura',
+    'sensor_temp_umidade', 'sensor_nivel_agua', 'sensor_ph', 'sensor_co2', 'sensor_camera',
+    'iluminacao', 'climatizacao', 'irrigacao', 'outro' // Legado
+  ]).optional(),
   tentId: z.coerce.number().optional(),
   consumoWatts: z.coerce.number().optional(),
   numeroTomadas: z.coerce.number().optional(),
@@ -59,7 +74,7 @@ const NewEquipment = () => {
     defaultValues: {
       nome: '',
       marca: '',
-      tipo: 'iluminacao',
+      tipo: 'iluminacao_led',
       tentId: 0,
       consumoWatts: 0,
       numeroTomadas: 1,
@@ -77,7 +92,7 @@ const NewEquipment = () => {
       await createEquipment({
         nome: data.nome || '',
         marca: data.marca,
-        tipo: data.tipo || 'iluminacao',
+        tipo: data.tipo || 'iluminacao_led',
         tentId: data.tentId || 0,
         consumoWatts: data.consumoWatts || 0,
         numeroTomadas: data.numeroTomadas || 1,
@@ -165,10 +180,65 @@ const NewEquipment = () => {
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="iluminacao">Iluminação</SelectItem>
-                      <SelectItem value="climatizacao">Climatização</SelectItem>
-                      <SelectItem value="irrigacao">Irrigação</SelectItem>
+                    <SelectContent className="max-h-[300px]">
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Climatização</div>
+                      <SelectItem value="climatizacao_exaustor">Exaustor (Saída)</SelectItem>
+                      <SelectItem value="climatizacao_intrator">Intrator (Entrada)</SelectItem>
+                      <SelectItem value="climatizacao_filtro">Filtro de Carvão</SelectItem>
+                      <SelectItem value="climatizacao_ventilador">Ventilador de Circulação</SelectItem>
+                      <SelectItem value="climatizacao_ar_condicionado">Ar Condicionado</SelectItem>
+                      <SelectItem value="climatizacao_umidificador">Umidificador</SelectItem>
+                      <SelectItem value="climatizacao_desumidificador">Desumidificador</SelectItem>
+                      <SelectItem value="climatizacao_aquecedor">Aquecedor</SelectItem>
+                      <SelectItem value="climatizacao_duto">Duto de Ar</SelectItem>
+                      <SelectItem value="climatizacao_controlador">Controlador de Clima</SelectItem>
+                      
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Iluminação</div>
+                      <SelectItem value="iluminacao_led">Painel de LED</SelectItem>
+                      <SelectItem value="iluminacao_hps">Lâmpada HPS</SelectItem>
+                      <SelectItem value="iluminacao_mh">Lâmpada MH</SelectItem>
+                      <SelectItem value="iluminacao_cmh">Lâmpada CMH</SelectItem>
+                      <SelectItem value="iluminacao_fluorescente">Lâmpada Fluorescente</SelectItem>
+                      <SelectItem value="iluminacao_reator">Reator</SelectItem>
+                      <SelectItem value="iluminacao_refletor">Refletor</SelectItem>
+                      <SelectItem value="iluminacao_timer">Timer</SelectItem>
+                      <SelectItem value="iluminacao_medidor">Medidor de Luz</SelectItem>
+                      
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Irrigação e Nutrição</div>
+                      <SelectItem value="irrigacao_bomba_agua">Bomba de Água</SelectItem>
+                      <SelectItem value="irrigacao_bomba_ar">Bomba de Ar</SelectItem>
+                      <SelectItem value="irrigacao_pedra_porosa">Pedra Porosa</SelectItem>
+                      <SelectItem value="irrigacao_gotejamento">Sistema de Gotejamento</SelectItem>
+                      <SelectItem value="irrigacao_reservatorio">Reservatório de Água</SelectItem>
+                      <SelectItem value="irrigacao_filtro">Filtro de Água</SelectItem>
+                      <SelectItem value="irrigacao_chiller">Chiller de Água</SelectItem>
+                      <SelectItem value="irrigacao_medidor_ph">Medidor de pH</SelectItem>
+                      <SelectItem value="irrigacao_medidor_ec">Medidor de EC/TDS</SelectItem>
+                      <SelectItem value="irrigacao_dosadora">Dosadora de Nutrientes</SelectItem>
+                      
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Estrutura e Vasos</div>
+                      <SelectItem value="estrutura_tenda">Tenda de Cultivo</SelectItem>
+                      <SelectItem value="estrutura_vaso">Vaso</SelectItem>
+                      <SelectItem value="estrutura_hidroponico">Sistema Hidropônico</SelectItem>
+                      <SelectItem value="estrutura_bandeja">Bandeja de Drenagem</SelectItem>
+                      <SelectItem value="estrutura_rede_scrog">Rede de SCROG</SelectItem>
+                      <SelectItem value="estrutura_suporte">Suporte/Tutor</SelectItem>
+                      
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Germinação e Clonagem</div>
+                      <SelectItem value="germinacao_domo">Domo Propagador</SelectItem>
+                      <SelectItem value="germinacao_bandeja">Bandeja de Células</SelectItem>
+                      <SelectItem value="germinacao_manta">Manta Térmica</SelectItem>
+                      <SelectItem value="germinacao_clone_machine">Clone Machine</SelectItem>
+                      <SelectItem value="germinacao_tesoura">Lâmina/Tesoura de Clonagem</SelectItem>
+                      
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Sensores e Medição</div>
+                      <SelectItem value="sensor_temp_umidade">Sensor Temp/Umidade</SelectItem>
+                      <SelectItem value="sensor_nivel_agua">Sensor de Nível de Água</SelectItem>
+                      <SelectItem value="sensor_ph">Sensor de pH</SelectItem>
+                      <SelectItem value="sensor_co2">Sensor de CO2</SelectItem>
+                      <SelectItem value="sensor_camera">Câmera de Monitoramento</SelectItem>
+                      
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Outros</div>
                       <SelectItem value="outro">Outro</SelectItem>
                     </SelectContent>
                   </Select>

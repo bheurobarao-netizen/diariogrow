@@ -37,6 +37,58 @@ const Equipment = () => {
 
   const getTipoLabel = (tipo: string) => {
     const labels: Record<string, string> = {
+      // Climatização
+      climatizacao_exaustor: 'Exaustor',
+      climatizacao_intrator: 'Intrator',
+      climatizacao_filtro: 'Filtro de Carvão',
+      climatizacao_ventilador: 'Ventilador',
+      climatizacao_ar_condicionado: 'Ar Condicionado',
+      climatizacao_umidificador: 'Umidificador',
+      climatizacao_desumidificador: 'Desumidificador',
+      climatizacao_aquecedor: 'Aquecedor',
+      climatizacao_duto: 'Duto de Ar',
+      climatizacao_controlador: 'Controlador Clima',
+      // Iluminação
+      iluminacao_led: 'LED',
+      iluminacao_hps: 'HPS',
+      iluminacao_mh: 'MH',
+      iluminacao_cmh: 'CMH',
+      iluminacao_fluorescente: 'Fluorescente',
+      iluminacao_reator: 'Reator',
+      iluminacao_refletor: 'Refletor',
+      iluminacao_timer: 'Timer',
+      iluminacao_medidor: 'Medidor Luz',
+      // Irrigação
+      irrigacao_bomba_agua: 'Bomba Água',
+      irrigacao_bomba_ar: 'Bomba Ar',
+      irrigacao_pedra_porosa: 'Pedra Porosa',
+      irrigacao_gotejamento: 'Gotejamento',
+      irrigacao_reservatorio: 'Reservatório',
+      irrigacao_filtro: 'Filtro Água',
+      irrigacao_chiller: 'Chiller',
+      irrigacao_medidor_ph: 'Medidor pH',
+      irrigacao_medidor_ec: 'Medidor EC',
+      irrigacao_dosadora: 'Dosadora',
+      // Estrutura
+      estrutura_tenda: 'Tenda',
+      estrutura_vaso: 'Vaso',
+      estrutura_hidroponico: 'Hidropônico',
+      estrutura_bandeja: 'Bandeja',
+      estrutura_rede_scrog: 'SCROG',
+      estrutura_suporte: 'Suporte',
+      // Germinação
+      germinacao_domo: 'Domo',
+      germinacao_bandeja: 'Bandeja',
+      germinacao_manta: 'Manta Térmica',
+      germinacao_clone_machine: 'Clone Machine',
+      germinacao_tesoura: 'Tesoura',
+      // Sensores
+      sensor_temp_umidade: 'Termo-Higrômetro',
+      sensor_nivel_agua: 'Nível Água',
+      sensor_ph: 'Sensor pH',
+      sensor_co2: 'Sensor CO2',
+      sensor_camera: 'Câmera',
+      // Legado/Outros
       iluminacao: 'Iluminação',
       climatizacao: 'Climatização',
       irrigacao: 'Irrigação',
