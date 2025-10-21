@@ -26,6 +26,7 @@ import EditEntry from "./pages/EditEntry";
 import Colheitas from "./pages/Colheitas";
 import NewColheita from "./pages/NewColheita";
 import EditColheita from "./pages/EditColheita";
+import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -136,7 +137,7 @@ const App = () => {
               element={
                 session ? (
                   <Layout>
-                    <div className="p-4">Calendário (em breve)</div>
+                    <Calendar />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
