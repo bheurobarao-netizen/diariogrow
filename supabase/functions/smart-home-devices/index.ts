@@ -9,6 +9,7 @@ const corsHeaders = {
 // Tuya API configuration
 const ACCESS_ID = Deno.env.get('SMART_HOME_ACCESS_ID');
 const ACCESS_SECRET = Deno.env.get('SMART_HOME_ACCESS_SECRET');
+const PROJECT_CODE = Deno.env.get('SMART_HOME_PROJECT_CODE');
 const API_BASE_URL = 'https://openapi.tuyaus.com';
 
 // Generate signature for Tuya API
@@ -158,11 +159,16 @@ serve(async (req) => {
 
     switch (action) {
       case 'list_devices': {
-        // List all devices using the IoT project endpoint
-        // The endpoint requires page_no and page_size parameters
+        // List all devices using the expand devices endpoint with project_id
+        const queryParams = new URLSearchParams({
+          'request.project_id': PROJECT_CODE!,
+          'request.page_no': '1',
+          'request.page_size': '100'
+        });
+        
         const devices = await makeAuthenticatedRequest(
           'GET',
-          '/v1.0/iot-03/devices?page_no=1&page_size=100',
+          `/v1.0/expand/devices?${queryParams.toString()}`,
           null,
           accessToken
         );
