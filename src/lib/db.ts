@@ -9,13 +9,20 @@ export interface Tent {
   alturaCm: number;
   profundidadeCm: number;
   cumprimentoCm: number;
-  iluminacao: {
-    totalWatts: number;
-    chipLed: string;
-    driverLed: string;
-  };
-  outrosEquipamentos?: string;
   observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Equipment {
+  id?: number;
+  nome: string;
+  marca?: string;
+  tipo: 'iluminacao' | 'climatizacao' | 'irrigacao' | 'outro';
+  tentId: number;
+  consumoWatts: number;
+  numeroTomadas: number;
+  notas?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -171,6 +178,7 @@ export class GrowDiaryDB extends Dexie {
   curas!: Table<Cura>;
   tasks!: Table<Task>;
   breedingEvents!: Table<BreedingEvent>;
+  equipment!: Table<Equipment>;
 
   constructor() {
     super('GrowDiaryDB');
@@ -217,6 +225,20 @@ export class GrowDiaryDB extends Dexie {
       curas: '++id, colheitaId, poteNome, createdAt',
       tasks: '++id, dueDate, isComplete, plantId, tentId, createdAt',
       breedingEvents: '++id, dataCruzamento, maeId, paiId, createdAt'
+    });
+    
+    // Version 6: Add equipment table and simplify tents (remove iluminacao)
+    this.version(6).stores({
+      plants: '++id, codigo, maeId, paiId, origem, tentId, viva, createdAt',
+      entries: '++id, date, plantId, tentId, fase, createdAt',
+      sharedLinks: '++id, token, entryId, expiresAt',
+      tents: '++id, nome, createdAt',
+      insumos: '++id, nomeProduto, tipo, createdAt',
+      colheitas: '++id, plantId, dataColheita, createdAt',
+      curas: '++id, colheitaId, poteNome, createdAt',
+      tasks: '++id, dueDate, isComplete, plantId, tentId, createdAt',
+      breedingEvents: '++id, dataCruzamento, maeId, paiId, createdAt',
+      equipment: '++id, tentId, tipo, nome, createdAt'
     });
   }
 }

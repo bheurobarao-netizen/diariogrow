@@ -3,7 +3,6 @@ import { useTentStore } from '@/stores/tentStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Save } from 'lucide-react';
@@ -24,10 +23,6 @@ const tentSchema = z.object({
   alturaCm: z.coerce.number().optional(),
   profundidadeCm: z.coerce.number().optional(),
   cumprimentoCm: z.coerce.number().optional(),
-  totalWatts: z.coerce.number().optional(),
-  chipLed: z.string().optional(),
-  driverLed: z.string().optional(),
-  outrosEquipamentos: z.string().optional(),
   observacoes: z.string().optional(),
 });
 
@@ -45,10 +40,6 @@ const NewTent = () => {
       alturaCm: 0,
       profundidadeCm: 0,
       cumprimentoCm: 0,
-      totalWatts: 0,
-      chipLed: '',
-      driverLed: '',
-      outrosEquipamentos: '',
       observacoes: '',
     },
   });
@@ -60,12 +51,6 @@ const NewTent = () => {
         alturaCm: data.alturaCm || 0,
         profundidadeCm: data.profundidadeCm || 0,
         cumprimentoCm: data.cumprimentoCm || 0,
-        iluminacao: {
-          totalWatts: data.totalWatts || 0,
-          chipLed: data.chipLed || '',
-          driverLed: data.driverLed || '',
-        },
-        outrosEquipamentos: data.outrosEquipamentos,
         observacoes: data.observacoes,
       });
 
@@ -98,15 +83,13 @@ const NewTent = () => {
           Voltar
         </Button>
         <h1 className="text-3xl font-bold text-primary">Nova Tenda</h1>
-        <p className="text-muted-foreground mt-1">
-          Cadastre uma nova tenda de cultivo
-        </p>
+        <p className="text-muted-foreground mt-1">Cadastre um novo espaço de cultivo</p>
       </div>
 
       <Card className="p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Nome */}
+            {/* Basic Info */}
             <FormField
               control={form.control}
               name="nome"
@@ -114,7 +97,7 @@ const NewTent = () => {
                 <FormItem>
                   <FormLabel>Nome da Tenda</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Tenda 1 (Veg)" {...field} />
+                    <Input placeholder="Ex: Tenda Principal" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,13 +107,13 @@ const NewTent = () => {
             {/* Dimensions */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium">Dimensões (cm)</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="cumprimentoCm"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cumprimento</FormLabel>
+                      <FormLabel>Comprimento</FormLabel>
                       <FormControl>
                         <Input type="number" placeholder="120" {...field} />
                       </FormControl>
@@ -169,54 +152,6 @@ const NewTent = () => {
               </div>
             </div>
 
-            {/* Lighting */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium">Iluminação</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="totalWatts"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Potência Total (W)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="300" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="chipLed"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Chip LED</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Samsung LM301H" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="driverLed"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Driver LED</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Mean Well HLG" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
             {/* Observations */}
             <FormField
               control={form.control}
@@ -235,27 +170,7 @@ const NewTent = () => {
                 </FormItem>
               )}
             />
-            
-            {/* Other Equipment */}
-            <FormField
-              control={form.control}
-              name="outrosEquipamentos"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Outros Equipamentos</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Ex: Exaustor 6 polegadas, Filtro de Carvão..."
-                      rows={2}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            {/* Actions */}
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -265,7 +180,7 @@ const NewTent = () => {
               >
                 Cancelar
               </Button>
-              <Button type="submit" variant="gradient" className="flex-1 gap-2">
+              <Button type="submit" className="flex-1 gradient-primary gap-2">
                 <Save className="w-4 h-4" />
                 Criar Tenda
               </Button>

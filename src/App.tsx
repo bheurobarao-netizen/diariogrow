@@ -28,6 +28,8 @@ import NewColheita from "./pages/NewColheita";
 import EditColheita from "./pages/EditColheita";
 import Calendar from "./pages/Calendar";
 import Stats from "./pages/Stats";
+import Equipment from "./pages/Equipment";
+import NewEquipment from "./pages/NewEquipment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -295,6 +297,30 @@ const App = () => {
                 session ? (
                   <Layout>
                     <EditColheita />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/equipment"
+              element={
+                session ? (
+                  <Layout>
+                    <Equipment />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/equipment/new"
+              element={
+                session ? (
+                  <Layout>
+                    <NewEquipment />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />

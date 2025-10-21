@@ -118,28 +118,6 @@ const Tents = () => {
                 </div>
               </div>
 
-              {/* Lighting Info */}
-              <div className="bg-muted/50 rounded-lg p-3 mb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Lightbulb className="w-4 h-4 text-primary" />
-                  <span className="font-medium text-sm">Iluminação</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <p className="text-muted-foreground text-xs">Potência</p>
-                    <p className="font-medium">{tent.iluminacao.totalWatts}W</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs">Chip LED</p>
-                    <p className="font-medium">{tent.iluminacao.chipLed}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-muted-foreground text-xs">Driver</p>
-                    <p className="font-medium">{tent.iluminacao.driverLed}</p>
-                  </div>
-                </div>
-              </div>
-
               {tent.observacoes && (
                 <p className="text-sm text-muted-foreground border-t pt-3">
                   {tent.observacoes}
