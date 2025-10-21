@@ -67,13 +67,12 @@ const NewInsumo = () => {
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="nome">Nome do Produto *</Label>
+            <Label htmlFor="nome">Nome do Produto</Label>
             <Input
               id="nome"
               value={formData.nomeProduto}
               onChange={(e) => setFormData({ ...formData, nomeProduto: e.target.value })}
               placeholder="Ex: Nitrato de Cálcio"
-              required
             />
           </div>
           
@@ -88,7 +87,7 @@ const NewInsumo = () => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="tipo">Tipo *</Label>
+            <Label htmlFor="tipo">Tipo</Label>
             <Select
               value={formData.tipo}
               onValueChange={(value: any) => setFormData({ ...formData, tipo: value })}

@@ -20,13 +20,14 @@ import {
 } from '@/components/ui/form';
 
 const tentSchema = z.object({
-  nome: z.string().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
-  alturaCm: z.coerce.number().min(1, 'Altura deve ser maior que 0'),
-  profundidadeCm: z.coerce.number().min(1, 'Profundidade deve ser maior que 0'),
-  cumprimentoCm: z.coerce.number().min(1, 'Cumprimento deve ser maior que 0'),
-  totalWatts: z.coerce.number().min(1, 'Potência deve ser maior que 0'),
-  chipLed: z.string().min(1, 'Chip LED é obrigatório'),
-  driverLed: z.string().min(1, 'Driver LED é obrigatório'),
+  nome: z.string().optional(),
+  alturaCm: z.coerce.number().optional(),
+  profundidadeCm: z.coerce.number().optional(),
+  cumprimentoCm: z.coerce.number().optional(),
+  totalWatts: z.coerce.number().optional(),
+  chipLed: z.string().optional(),
+  driverLed: z.string().optional(),
+  outrosEquipamentos: z.string().optional(),
   observacoes: z.string().optional(),
 });
 
@@ -47,6 +48,7 @@ const NewTent = () => {
       totalWatts: 0,
       chipLed: '',
       driverLed: '',
+      outrosEquipamentos: '',
       observacoes: '',
     },
   });
@@ -54,15 +56,16 @@ const NewTent = () => {
   const onSubmit = async (data: TentFormData) => {
     try {
       await createTent({
-        nome: data.nome,
-        alturaCm: data.alturaCm,
-        profundidadeCm: data.profundidadeCm,
-        cumprimentoCm: data.cumprimentoCm,
+        nome: data.nome || '',
+        alturaCm: data.alturaCm || 0,
+        profundidadeCm: data.profundidadeCm || 0,
+        cumprimentoCm: data.cumprimentoCm || 0,
         iluminacao: {
-          totalWatts: data.totalWatts,
-          chipLed: data.chipLed,
-          driverLed: data.driverLed,
+          totalWatts: data.totalWatts || 0,
+          chipLed: data.chipLed || '',
+          driverLed: data.driverLed || '',
         },
+        outrosEquipamentos: data.outrosEquipamentos,
         observacoes: data.observacoes,
       });
 
@@ -225,6 +228,25 @@ const NewTent = () => {
                     <Textarea
                       placeholder="Notas adicionais sobre a tenda..."
                       rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Other Equipment */}
+            <FormField
+              control={form.control}
+              name="outrosEquipamentos"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Outros Equipamentos</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Ex: Exaustor 6 polegadas, Filtro de Carvão..."
+                      rows={2}
                       {...field}
                     />
                   </FormControl>

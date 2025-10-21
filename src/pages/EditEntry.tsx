@@ -261,16 +261,15 @@ const EditEntry = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info Section */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="date">Data *</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="date">Data</Label>
+            <Input
+              id="date"
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            />
+          </div>
             
             <div className="space-y-2">
               <Label htmlFor="plant">Planta</Label>

@@ -73,15 +73,6 @@ const NewEntry = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.plantId) {
-      toast({
-        title: 'Erro',
-        description: 'Selecione uma planta',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     try {
       await createEntry({
         date: formData.date,
@@ -208,24 +199,22 @@ const NewEntry = () => {
           <h2 className="text-xl font-semibold mb-4">Informações Básicas</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="date">Data *</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="date">Data</Label>
+              <Input
+                id="date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="plant">Planta *</Label>
-                <Select
-                  value={formData.plantId?.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, plantId: Number(value) })}
-                  required
-                >
+            <div className="space-y-2">
+              <Label htmlFor="plant">Planta</Label>
+              <Select
+                value={formData.plantId?.toString()}
+                onValueChange={(value) => setFormData({ ...formData, plantId: Number(value) })}
+              >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma planta" />
                   </SelectTrigger>

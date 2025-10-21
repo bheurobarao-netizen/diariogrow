@@ -56,15 +56,6 @@ const NewPlant = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.origem === 'clone' && !formData.maeId) {
-      toast({
-        title: 'Erro',
-        description: 'Selecione a planta mãe para clones',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
     try {
       console.log('Submitting form with data:', formData);
       
@@ -127,24 +118,22 @@ const NewPlant = () => {
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="apelido">Apelido / Nome *</Label>
+            <Label htmlFor="apelido">Apelido / Nome</Label>
             <Input
               id="apelido"
               value={formData.apelido}
               onChange={(e) => setFormData({ ...formData, apelido: e.target.value })}
               placeholder="Ex: Green Queen"
-              required
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="especie">Espécie / Cepa *</Label>
+            <Label htmlFor="especie">Espécie / Cepa</Label>
             <Input
               id="especie"
               value={formData.especie}
               onChange={(e) => setFormData({ ...formData, especie: e.target.value })}
               placeholder="Ex: OG Kush"
-              required
             />
           </div>
           
@@ -182,7 +171,6 @@ const NewPlant = () => {
               <Select
                 value={formData.maeId?.toString()}
                 onValueChange={(value) => setFormData({ ...formData, maeId: Number(value) })}
-                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione a planta mãe" />

@@ -23,6 +23,9 @@ import NewInsumo from "./pages/NewInsumo";
 import EditInsumo from "./pages/EditInsumo";
 import EntryDetail from "./pages/EntryDetail";
 import EditEntry from "./pages/EditEntry";
+import Colheitas from "./pages/Colheitas";
+import NewColheita from "./pages/NewColheita";
+import EditColheita from "./pages/EditColheita";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -254,6 +257,42 @@ const App = () => {
                 session ? (
                   <Layout>
                     <EditEntry />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/colheitas"
+              element={
+                session ? (
+                  <Layout>
+                    <Colheitas />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/colheitas/new"
+              element={
+                session ? (
+                  <Layout>
+                    <NewColheita />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/colheitas/edit/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <EditColheita />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
