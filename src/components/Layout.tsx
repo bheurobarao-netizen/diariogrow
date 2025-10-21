@@ -17,6 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
   
   const navItems = [
     { path: '/', icon: Home, label: 'Início' },
+    { path: '/calendar', icon: Calendar, label: 'Calendário' },
     { path: '/plants', icon: Sprout, label: 'Plantas' },
     { path: '/new', icon: Plus, label: 'Adicionar' },
     { path: '/tents', icon: Home, label: 'Tendas' },
