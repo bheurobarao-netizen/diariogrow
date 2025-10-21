@@ -47,6 +47,15 @@ export const usePlantStore = create<PlantState>((set, get) => ({
     try {
       console.log('Creating plant with data:', plantData);
       
+      // Calculate generation for clones
+      let geracao = 0;
+      if (plantData.origem === 'clone' && plantData.maeId) {
+        const mae = await db.plants.get(plantData.maeId);
+        if (mae) {
+          geracao = mae.geracao + 1;
+        }
+      }
+      
       const codigo = await generatePlantCode(plantData.origem, plantData.maeId);
       console.log('Generated code:', codigo);
       
@@ -56,6 +65,7 @@ export const usePlantStore = create<PlantState>((set, get) => ({
       const now = new Date().toISOString();
       const plant: Omit<Plant, 'id'> = {
         ...plantData,
+        geracao,
         codigo,
         qrCodeData,
         createdAt: now,

@@ -10,6 +10,7 @@ import { Leaf, ArrowLeft, Pencil, Plus } from 'lucide-react';
 import { getPhaseLabel } from '@/lib/phases';
 import { Plant, Entry } from '@/lib/db';
 import PlantGallery from '@/components/plants/PlantGallery';
+import PlantLineage from '@/components/plants/PlantLineage';
 
 const PlantDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -234,6 +235,12 @@ const PlantDetail = () => {
         ) : (
           <PlantGallery entries={entries} />
         )}
+      </div>
+
+      {/* Lineage Section */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Linhagem</h2>
+        <PlantLineage plantId={plant.id!} />
       </div>
     </div>
   );

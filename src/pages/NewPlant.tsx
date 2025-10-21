@@ -16,7 +16,7 @@ import { PlantPhase } from '@/lib/phases';
 
 const NewPlant = () => {
   const navigate = useNavigate();
-  const { createPlant } = usePlantStore();
+  const { createPlant, getMotherPlants } = usePlantStore();
   const { tents, fetchTents } = useTentStore();
   const { toast } = useToast();
   
@@ -29,6 +29,7 @@ const NewPlant = () => {
     especie: '',
     bancoSementes: '',
     origem: 'semente' as 'semente' | 'clone',
+    maeId: undefined as number | undefined,
     indica: 50,
     sativa: 50,
     ruderalis: 0,
@@ -42,8 +43,27 @@ const NewPlant = () => {
     tentId: undefined as number | undefined,
   });
   
+  const [motherPlants, setMotherPlants] = useState<any[]>([]);
+  
+  useEffect(() => {
+    const loadMotherPlants = async () => {
+      const mothers = await getMotherPlants();
+      setMotherPlants(mothers);
+    };
+    loadMotherPlants();
+  }, [getMotherPlants]);
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (formData.origem === 'clone' && !formData.maeId) {
+      toast({
+        title: 'Erro',
+        description: 'Selecione a planta mãe para clones',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     try {
       console.log('Submitting form with data:', formData);
@@ -53,12 +73,13 @@ const NewPlant = () => {
         especie: formData.especie,
         bancoSementes: formData.bancoSementes || undefined,
         origem: formData.origem,
+        maeId: formData.origem === 'clone' ? formData.maeId : undefined,
         genetica: {
           indica: formData.indica,
           sativa: formData.sativa,
           ruderalis: formData.ruderalis,
         },
-        geracao: formData.origem === 'semente' ? 1 : 0,
+        geracao: formData.origem === 'semente' ? 0 : 0, // Will be calculated by store
         faseAtual: formData.faseAtual,
         metodoAtual: formData.metodoAtual || undefined,
         fenotipoNotas: formData.fenotipoNotas || undefined,
@@ -137,19 +158,61 @@ const NewPlant = () => {
             />
           </div>
           
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div className="space-y-0.5">
-              <Label htmlFor="sera-mae" className="text-base">Será usada como mãe</Label>
-              <p className="text-sm text-muted-foreground">
-                Marque se esta planta será mantida para clonagem
-              </p>
-            </div>
-            <Switch
-              id="sera-mae"
-              checked={formData.seraMae}
-              onCheckedChange={(checked) => setFormData({ ...formData, seraMae: checked })}
-            />
+          <div className="space-y-2">
+            <Label htmlFor="origem">Origem *</Label>
+            <Select
+              value={formData.origem}
+              onValueChange={(value: 'semente' | 'clone') => 
+                setFormData({ ...formData, origem: value, maeId: undefined })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="semente">Semente</SelectItem>
+                <SelectItem value="clone">Clone</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+          
+          {formData.origem === 'clone' && (
+            <div className="space-y-2">
+              <Label htmlFor="mae">Planta Mãe *</Label>
+              <Select
+                value={formData.maeId?.toString()}
+                onValueChange={(value) => setFormData({ ...formData, maeId: Number(value) })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a planta mãe" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {motherPlants.map((mother) => (
+                    <SelectItem key={mother.id} value={mother.id!.toString()}>
+                      {mother.apelido} ({mother.codigo}) - G{mother.geracao}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          
+          {formData.origem === 'semente' && (
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="space-y-0.5">
+                <Label htmlFor="sera-mae" className="text-base">Será usada como mãe</Label>
+                <p className="text-sm text-muted-foreground">
+                  Marque se esta planta será mantida para clonagem
+                </p>
+              </div>
+              <Switch
+                id="sera-mae"
+                checked={formData.seraMae}
+                onCheckedChange={(checked) => setFormData({ ...formData, seraMae: checked })}
+              />
+            </div>
+          )}
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

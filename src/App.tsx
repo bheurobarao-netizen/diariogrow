@@ -17,6 +17,7 @@ import NewEntry from "./pages/NewEntry";
 import Tents from "./pages/Tents";
 import NewTent from "./pages/NewTent";
 import EditTent from "./pages/EditTent";
+import Lineage from "./pages/Lineage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -176,6 +177,18 @@ const App = () => {
                 session ? (
                   <Layout>
                     <EditTent />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/lineage"
+              element={
+                session ? (
+                  <Layout>
+                    <Lineage />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />
