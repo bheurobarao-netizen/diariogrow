@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Leaf } from 'lucide-react';
 import { PhaseSelector } from '@/components/plants/PhaseSelector';
@@ -28,6 +29,9 @@ const NewPlant = () => {
     observacoes: '',
     faseAtual: undefined as PlantPhase | undefined,
     metodoAtual: '',
+    seraMae: false,
+    dataGerminacao: '',
+    dataNascimento: '',
   });
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +56,8 @@ const NewPlant = () => {
         fenotipoNotas: formData.fenotipoNotas || undefined,
         observacoes: formData.observacoes || undefined,
         viva: true,
-        dataNascimento: new Date().toISOString().split('T')[0],
+        dataGerminacao: formData.dataGerminacao || undefined,
+        dataNascimento: formData.dataNascimento || undefined,
       };
       
       console.log('Creating plant:', plantToCreate);
@@ -121,6 +126,41 @@ const NewPlant = () => {
               onChange={(e) => setFormData({ ...formData, bancoSementes: e.target.value })}
               placeholder="Ex: Royal Queen Seeds"
             />
+          </div>
+          
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="space-y-0.5">
+              <Label htmlFor="sera-mae" className="text-base">Será usada como mãe</Label>
+              <p className="text-sm text-muted-foreground">
+                Marque se esta planta será mantida para clonagem
+              </p>
+            </div>
+            <Switch
+              id="sera-mae"
+              checked={formData.seraMae}
+              onCheckedChange={(checked) => setFormData({ ...formData, seraMae: checked })}
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="data-germinacao">Data de Germinação</Label>
+              <Input
+                id="data-germinacao"
+                type="date"
+                value={formData.dataGerminacao}
+                onChange={(e) => setFormData({ ...formData, dataGerminacao: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="data-nascimento">Data de Nascimento</Label>
+              <Input
+                id="data-nascimento"
+                type="date"
+                value={formData.dataNascimento}
+                onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
+              />
+            </div>
           </div>
           
           <div className="space-y-4">
