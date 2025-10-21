@@ -3,17 +3,30 @@ import { usePlantStore } from '@/stores/plantStore';
 import { useTentStore } from '@/stores/tentStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Leaf, Plus, QrCode, Printer, Pencil } from 'lucide-react';
+import { Leaf, Plus, QrCode, Printer, Pencil, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { getPhaseLabel } from '@/lib/phases';
 import { Plant } from '@/lib/db';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 const Plants = () => {
   const navigate = useNavigate();
-  const { plants, fetchPlants, loading } = usePlantStore();
+  const { plants, fetchPlants, deletePlant, loading } = usePlantStore();
   const { tents, fetchTents } = useTentStore();
   const [showQR, setShowQR] = useState<number | null>(null);
+  const { toast } = useToast();
   
   useEffect(() => {
     fetchPlants();
@@ -24,6 +37,26 @@ const Plants = () => {
     if (!tentId) return null;
     const tent = tents.find((t) => t.id === tentId);
     return tent?.nome;
+  };
+  
+  const handleDelete = async (plantId: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      await deletePlant(plantId);
+      toast({
+        title: 'Planta excluída',
+        description: 'A planta foi removida com sucesso',
+      });
+    } catch (error) {
+      console.error('Error deleting plant:', error);
+      toast({
+        title: 'Erro',
+        description: error instanceof Error ? error.message : 'Não foi possível excluir a planta',
+        variant: 'destructive',
+      });
+    }
   };
   
   const printLabel = (plant: Plant) => {
@@ -230,6 +263,30 @@ const Plants = () => {
                       >
                         <QrCode className="w-4 h-4" />
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir "{plant.apelido}"? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={(e) => handleDelete(plant.id!, e)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                   
@@ -307,6 +364,30 @@ const Plants = () => {
                           >
                             <QrCode className="w-4 h-4" />
                           </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja excluir "{clone.apelido}"? Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={(e) => handleDelete(clone.id!, e)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Excluir
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                       

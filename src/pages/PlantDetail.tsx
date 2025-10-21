@@ -6,21 +6,34 @@ import { useEntryStore } from '@/stores/entryStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Leaf, ArrowLeft, Pencil, Plus } from 'lucide-react';
+import { Leaf, ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { getPhaseLabel } from '@/lib/phases';
 import { Plant, Entry } from '@/lib/db';
 import PlantGallery from '@/components/plants/PlantGallery';
 import PlantLineage from '@/components/plants/PlantLineage';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 const PlantDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getPlant } = usePlantStore();
+  const { getPlant, deletePlant } = usePlantStore();
   const { getEntriesByPlant } = useEntryStore();
   const { tents, fetchTents } = useTentStore();
   const [plant, setPlant] = useState<Plant | null>(null);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchTents();
@@ -52,6 +65,26 @@ const PlantDetail = () => {
     if (!tentId) return null;
     const tent = tents.find((t) => t.id === tentId);
     return tent?.nome;
+  };
+
+  const handleDelete = async () => {
+    if (!plant?.id) return;
+    
+    try {
+      await deletePlant(plant.id);
+      toast({
+        title: 'Planta excluída',
+        description: 'A planta foi removida com sucesso',
+      });
+      navigate('/plants');
+    } catch (error) {
+      console.error('Error deleting plant:', error);
+      toast({
+        title: 'Erro',
+        description: error instanceof Error ? error.message : 'Não foi possível excluir a planta',
+        variant: 'destructive',
+      });
+    }
   };
 
   if (loading) {
@@ -104,6 +137,32 @@ const PlantDetail = () => {
             <Pencil className="w-4 h-4" />
             Editar
           </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" className="gap-2">
+                <Trash2 className="w-4 h-4" />
+                Excluir
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir "{plant.apelido}"? Esta ação não pode ser desfeita.
+                  {plant.origem === 'semente' && ' Plantas mães com clones ativos não podem ser excluídas.'}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
