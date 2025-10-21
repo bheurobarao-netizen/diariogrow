@@ -6,9 +6,9 @@ const corsHeaders = {
 };
 
 // Tuya API configuration
-const ACCESS_ID = Deno.env.get('SMART_HOME_ACCESS_ID');
-const ACCESS_SECRET = Deno.env.get('SMART_HOME_ACCESS_SECRET');
-const PROJECT_CODE = Deno.env.get('SMART_HOME_PROJECT_CODE');
+const ACCESS_ID = Deno.env.get('SMART_HOME_ACCESS_ID')?.trim();
+const ACCESS_SECRET = Deno.env.get('SMART_HOME_ACCESS_SECRET')?.trim();
+const PROJECT_CODE = Deno.env.get('SMART_HOME_PROJECT_CODE')?.trim();
 const API_BASE_URL = 'https://openapi.tuyaus.com';
 
 // SHA256 hash - returns lowercase as per Tuya spec
@@ -98,6 +98,18 @@ async function getAccessToken(): Promise<string> {
   const nonce = Math.random().toString(36).substring(7);
   const path = '/v1.0/token?grant_type=1';
   
+  // Debug: Check if secrets are loaded correctly
+  console.log('Secrets check:', {
+    hasAccessId: !!ACCESS_ID,
+    accessIdLength: ACCESS_ID?.length,
+    accessIdPrefix: ACCESS_ID?.substring(0, 8) + '...',
+    hasAccessSecret: !!ACCESS_SECRET,
+    secretLength: ACCESS_SECRET?.length,
+    secretPrefix: ACCESS_SECRET?.substring(0, 4) + '...',
+    hasProjectCode: !!PROJECT_CODE,
+    apiBaseUrl: API_BASE_URL,
+  });
+  
   const signature = await generateSignature('GET', path, '', timestamp, nonce);
   
   const headers = {
@@ -108,7 +120,14 @@ async function getAccessToken(): Promise<string> {
     'nonce': nonce,
   };
 
-  console.log('Requesting access token...');
+  console.log('Requesting access token with headers:', {
+    client_id: ACCESS_ID,
+    sign: signature.substring(0, 20) + '...',
+    t: timestamp,
+    sign_method: 'HMAC-SHA256',
+    nonce,
+  });
+  
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: 'GET',
     headers,
@@ -118,6 +137,11 @@ async function getAccessToken(): Promise<string> {
   
   if (!data.success) {
     console.error('Failed to get access token:', data);
+    console.error('Full request details:', {
+      url: `${API_BASE_URL}${path}`,
+      headers,
+      timestamp,
+    });
     throw new Error(`Failed to get access token: ${data.msg}`);
   }
 
