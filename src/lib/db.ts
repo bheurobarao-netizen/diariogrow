@@ -1,6 +1,8 @@
 import Dexie, { Table } from 'dexie';
 import { PlantPhase } from './phases';
 
+export type { PlantPhase };
+
 export interface Plant {
   id?: number;
   codigo: string;
@@ -32,7 +34,7 @@ export interface Entry {
   id?: number;
   date: string;
   plantId?: number;
-  fase?: 'mae' | 'clone' | 'veg' | 'flow' | 'flush' | 'colheita' | 'cura';
+  fase?: PlantPhase;
   estufa?: string;
   cepa?: string;
   content: string;
@@ -43,13 +45,10 @@ export interface Entry {
   ph?: number;
   temperatura?: number;
   umidade?: number;
-  luz?: {
-    ppfd?: number;
-    horas?: number;
-  };
-  checklist?: string[];
-  problemas?: string;
-  solucoes?: string;
+  luz?: string;
+  checklist: string[];
+  problemas: string[];
+  solucoes: string[];
   createdAt: string;
   updatedAt: string;
 }

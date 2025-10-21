@@ -10,8 +10,10 @@ import Auth from "./pages/Auth";
 import Layout from "@/components/Layout";
 import Timeline from "./pages/Timeline";
 import Plants from "./pages/Plants";
+import PlantDetail from "./pages/PlantDetail";
 import NewPlant from "./pages/NewPlant";
 import EditPlant from "./pages/EditPlant";
+import NewEntry from "./pages/NewEntry";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -82,6 +84,18 @@ const App = () => {
               }
             />
             <Route
+              path="/plants/:id"
+              element={
+                session ? (
+                  <Layout>
+                    <PlantDetail />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
               path="/plants/new"
               element={
                 session ? (
@@ -122,7 +136,7 @@ const App = () => {
               element={
                 session ? (
                   <Layout>
-                    <div className="p-4">Nova Entrada (em breve)</div>
+                    <NewEntry />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />

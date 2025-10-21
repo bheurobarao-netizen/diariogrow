@@ -161,7 +161,7 @@ const Plants = () => {
               {mothers.map((plant) => (
                 <Card key={plant.id} className="p-4 hover:shadow-elegant transition-smooth">
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
+                    <Link to={`/plants/${plant.id}`} className="flex-1 hover:opacity-80 transition-opacity">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold text-lg">{plant.apelido}</h3>
                         <Badge variant="outline" className="text-xs">
@@ -193,7 +193,7 @@ const Plants = () => {
                           </Badge>
                         )}
                       </div>
-                    </div>
+                    </Link>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
@@ -242,7 +242,7 @@ const Plants = () => {
                   return (
                     <Card key={clone.id} className="p-4 hover:shadow-elegant transition-smooth">
                       <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
+                        <Link to={`/plants/${clone.id}`} className="flex-1 hover:opacity-80 transition-opacity">
                           <div className="flex items-center gap-2 mb-2">
                             <h3 className="font-semibold text-lg">{clone.apelido}</h3>
                             <Badge variant="outline" className="text-xs">
@@ -265,7 +265,7 @@ const Plants = () => {
                           <div className="flex gap-2 text-xs">
                             <Badge variant="secondary">Geração {clone.geracao}</Badge>
                           </div>
-                        </div>
+                        </Link>
                         <div className="flex gap-2">
                           <Button
                             variant="outline"
