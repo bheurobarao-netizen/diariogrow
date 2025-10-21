@@ -296,7 +296,6 @@ const NewPlant = () => {
                 <SelectValue placeholder="Selecione uma tenda (opcional)" />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
-                <SelectItem value="">Nenhuma tenda</SelectItem>
                 {tents.map((tent) => (
                   <SelectItem key={tent.id} value={tent.id!.toString()}>
                     {tent.nome}
