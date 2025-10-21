@@ -65,7 +65,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border/50 shadow-lg">
-        <div className="flex justify-center items-center h-20 w-full px-4 gap-2 max-w-4xl mx-auto">
+        <div className="flex items-center h-20 w-full px-2 sm:px-4 gap-1 sm:gap-2 max-w-4xl mx-auto overflow-x-auto scrollbar-hide snap-x snap-mandatory">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -77,12 +77,12 @@ const Layout = ({ children }: LayoutProps) => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    'flex flex-col items-center justify-center transition-all duration-300 flex-shrink-0',
-                    '-mt-10 mx-3 hover:scale-110'
+                    'flex flex-col items-center justify-center transition-all duration-300 flex-shrink-0 snap-center',
+                    '-mt-10 mx-2 sm:mx-3 hover:scale-110'
                   )}
                 >
-                  <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center shadow-glow hover:shadow-xl transition-all duration-300">
-                    <Icon className="w-7 h-7 text-primary-foreground" />
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full gradient-primary flex items-center justify-center shadow-glow hover:shadow-xl transition-all duration-300">
+                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary-foreground" />
                   </div>
                 </Link>
               );
@@ -93,15 +93,15 @@ const Layout = ({ children }: LayoutProps) => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl transition-all duration-300 flex-shrink-0 min-w-[70px] hover:bg-primary/10',
+                  'flex flex-col items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all duration-300 flex-shrink-0 min-w-[60px] sm:min-w-[70px] hover:bg-primary/10 snap-center',
                   isActive
                     ? 'text-primary bg-primary/10 scale-105'
                     : 'text-muted-foreground hover:text-foreground hover:scale-105'
                 )}
               >
-                <Icon className={cn('w-5 h-5 transition-transform duration-300', isActive && 'scale-110')} />
+                <Icon className={cn('w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300', isActive && 'scale-110')} />
                 <span className={cn(
-                  'text-[10px] font-medium whitespace-nowrap transition-all duration-300',
+                  'text-[9px] sm:text-[10px] font-medium whitespace-nowrap transition-all duration-300',
                   isActive && 'font-semibold'
                 )}>{item.label}</span>
               </Link>
