@@ -296,6 +296,232 @@ const PlantDetail = () => {
         )}
       </div>
 
+      {/* Diary Timeline Section */}
+      {entries.length > 0 && (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Diário da Planta</h2>
+          <div className="space-y-4">
+            {entries.map((entry) => (
+              <Card key={entry.id} className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Leaf className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        {new Date(entry.date).toLocaleDateString('pt-BR', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </h3>
+                      {entry.fase && (
+                        <Badge variant="outline" className="mt-1">
+                          {getPhaseLabel(entry.fase)}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <Link to={`/entry/${entry.id}`}>
+                    <Button variant="ghost" size="sm">
+                      Ver detalhes
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Environmental Conditions */}
+                {(entry.temperaturaMin || entry.temperaturaMax || entry.umidadeMin || entry.umidadeMax || entry.distanciaLuzCm) && (
+                  <div className="mb-4 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                      Condições Ambientais
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {(entry.temperaturaMin || entry.temperaturaMax) && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Temperatura</p>
+                          <p className="font-medium">
+                            {entry.temperaturaMin && `${entry.temperaturaMin}°C`}
+                            {entry.temperaturaMin && entry.temperaturaMax && ' - '}
+                            {entry.temperaturaMax && `${entry.temperaturaMax}°C`}
+                          </p>
+                        </div>
+                      )}
+                      {(entry.umidadeMin || entry.umidadeMax) && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Umidade</p>
+                          <p className="font-medium">
+                            {entry.umidadeMin && `${entry.umidadeMin}%`}
+                            {entry.umidadeMin && entry.umidadeMax && ' - '}
+                            {entry.umidadeMax && `${entry.umidadeMax}%`}
+                          </p>
+                        </div>
+                      )}
+                      {entry.distanciaLuzCm && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Distância Luz</p>
+                          <p className="font-medium">{entry.distanciaLuzCm}cm</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Nutrient Solution */}
+                {(entry.phAguaEntrada || entry.ecAguaEntrada || entry.phAguaSaida || entry.ecAguaSaida || entry.volumeTotalLitros) && (
+                  <div className="mb-4 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                      Solução Nutritiva
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      {entry.phAguaEntrada && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">pH Entrada</p>
+                          <p className="font-medium">{entry.phAguaEntrada}</p>
+                        </div>
+                      )}
+                      {entry.ecAguaEntrada && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">EC Entrada</p>
+                          <p className="font-medium">{entry.ecAguaEntrada}</p>
+                        </div>
+                      )}
+                      {entry.phAguaSaida && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">pH Saída</p>
+                          <p className="font-medium">{entry.phAguaSaida}</p>
+                        </div>
+                      )}
+                      {entry.ecAguaSaida && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">EC Saída</p>
+                          <p className="font-medium">{entry.ecAguaSaida}</p>
+                        </div>
+                      )}
+                      {entry.volumeTotalLitros && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Volume</p>
+                          <p className="font-medium">{entry.volumeTotalLitros}L</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Applied Nutrients */}
+                {entry.nutrientesAplicados && entry.nutrientesAplicados.length > 0 && (
+                  <div className="mb-4 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                      Nutrientes Aplicados
+                    </h4>
+                    <div className="space-y-2">
+                      {entry.nutrientesAplicados.map((nutrient, idx) => (
+                        <div key={idx} className="flex items-center justify-between">
+                          <span className="text-sm">{nutrient.nomeNutriente}</span>
+                          <Badge variant="secondary">
+                            {nutrient.quantidade} {nutrient.unidade}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions Performed */}
+                {entry.acoesRealizadas && entry.acoesRealizadas.length > 0 && (
+                  <div className="mb-4 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                      Ações Realizadas
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {entry.acoesRealizadas.map((action, idx) => (
+                        <Badge key={idx} variant="default">
+                          {action}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Problems and Corrective Actions */}
+                {((entry.problemasObservados && entry.problemasObservados.length > 0) ||
+                  (entry.acoesCorretivas && entry.acoesCorretivas.length > 0)) && (
+                  <div className="mb-4 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                    {entry.problemasObservados && entry.problemasObservados.length > 0 && (
+                      <div className="mb-2">
+                        <h4 className="font-medium mb-2 text-sm text-destructive">
+                          Problemas Observados
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {entry.problemasObservados.map((problem, idx) => (
+                            <Badge key={idx} variant="destructive">
+                              {problem}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {entry.acoesCorretivas && entry.acoesCorretivas.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                          Ações Corretivas
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {entry.acoesCorretivas.map((action, idx) => (
+                            <Badge key={idx} variant="outline">
+                              {action}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Photos and Videos */}
+                {((entry.photos && entry.photos.length > 0) ||
+                  (entry.videos && entry.videos.length > 0)) && (
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                      Mídia do Dia
+                    </h4>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                      {entry.photos?.map((photo, idx) => (
+                        <img
+                          key={idx}
+                          src={photo}
+                          alt={`Foto ${idx + 1}`}
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                      ))}
+                      {entry.videos?.map((video, idx) => (
+                        <video
+                          key={idx}
+                          src={video}
+                          className="w-full h-24 object-cover rounded-lg"
+                          controls
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Content/Observations */}
+                {entry.content && (
+                  <div className="pt-4 border-t">
+                    <h4 className="font-medium mb-2 text-sm text-muted-foreground">
+                      Observações
+                    </h4>
+                    <p className="text-sm whitespace-pre-wrap">{entry.content}</p>
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Lineage Section */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Linhagem</h2>

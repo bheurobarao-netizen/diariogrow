@@ -59,7 +59,9 @@ export const usePlantStore = create<PlantState>((set, get) => ({
       const codigo = await generatePlantCode(plantData.origem, plantData.maeId);
       console.log('Generated code:', codigo);
       
-      const qrCodeData = await QRCode.toDataURL(`app://plant/${codigo}`);
+      // Generate QR code with temporary URL
+      const tempId = Date.now();
+      const qrCodeData = await QRCode.toDataURL(`${window.location.origin}/plants/${tempId}`);
       console.log('Generated QR code');
       
       const now = new Date().toISOString();
@@ -76,7 +78,11 @@ export const usePlantStore = create<PlantState>((set, get) => ({
       const id = await db.plants.add(plant as Plant);
       console.log('Plant created with id:', id);
       
-      const createdPlant = { ...plant, id } as Plant;
+      // Update QR code with correct plant ID
+      const finalQrCodeData = await QRCode.toDataURL(`${window.location.origin}/plants/${id}`);
+      await db.plants.update(id, { qrCodeData: finalQrCodeData });
+      
+      const createdPlant = { ...plant, id, qrCodeData: finalQrCodeData } as Plant;
       
       set((state) => ({
         plants: [createdPlant, ...state.plants],
