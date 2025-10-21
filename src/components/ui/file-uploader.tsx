@@ -58,11 +58,14 @@ const FileUploader = ({
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
+        // Use signed URLs since bucket is now private (24 hour expiry)
+        const { data: signedData, error: signedError } = await supabase.storage
           .from('plant-media')
-          .getPublicUrl(fileName);
+          .createSignedUrl(fileName, 86400); // 24 hours
 
-        uploadedUrls.push(publicUrl);
+        if (signedError) throw signedError;
+
+        uploadedUrls.push(signedData.signedUrl);
       }
 
       const newFiles = [...files, ...uploadedUrls];
