@@ -221,7 +221,7 @@ serve(async (req) => {
       case 'list_devices': {
         // List all devices using the expand devices endpoint with project_id
         // Query parameters need to be in the URL
-        const path = `/v1.0/expand/devices?request.project_id=${PROJECT_CODE}&request.page_no=1&request.page_size=100`;
+        const path = `/v1.0/expand/devices?project_id=${PROJECT_CODE}&page_no=1&page_size=100`;
         
         const devices = await makeAuthenticatedRequest(
           'GET',
