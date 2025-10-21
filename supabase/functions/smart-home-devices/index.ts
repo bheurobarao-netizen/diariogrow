@@ -71,12 +71,13 @@ async function generateSignature(
   // Headers is empty (two consecutive \n), URL includes full path with sorted query params
   const stringToSign = `${method}\n${contentHash}\n\n${finalPath}`;
   
-  // CRITICAL FIX: Different signature formats for token vs service operations
-  // For token operations (no access_token): client_id + t + nonce + stringToSign
-  // For service operations (with access_token): client_id + access_token + t + nonce + stringToSign
+  // CRITICAL FIX: Correct signature format according to Tuya API specification
+  // For token operations (no access_token): client_id + t + stringToSign (NO nonce in signature)
+  // For service operations (with access_token): client_id + access_token + t + stringToSign (NO nonce in signature)
+  // NOTE: nonce is sent as HTTP header but NOT included in signature calculation
   const signStr = accessToken 
-    ? ACCESS_ID + accessToken + timestamp + nonce + stringToSign  // Service operations
-    : ACCESS_ID + timestamp + nonce + stringToSign;              // Token operations
+    ? ACCESS_ID + accessToken + timestamp + stringToSign  // Service operations
+    : ACCESS_ID + timestamp + stringToSign;              // Token operations
   const signature = await hmacSHA256(signStr, ACCESS_SECRET!);
   
   console.log('Signature debug:', {
