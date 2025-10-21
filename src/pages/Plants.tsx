@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { usePlantStore } from '@/stores/plantStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Leaf, Plus, QrCode, Printer } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Leaf, Plus, QrCode, Printer, Pencil } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { getPhaseLabel } from '@/lib/phases';
 import { Plant } from '@/lib/db';
 
 const Plants = () => {
+  const navigate = useNavigate();
   const { plants, fetchPlants, loading } = usePlantStore();
   const [showQR, setShowQR] = useState<number | null>(null);
   
@@ -197,6 +198,13 @@ const Plants = () => {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => navigate(`/plants/edit/${plant.id}`)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => printLabel(plant)}
                       >
                         <Printer className="w-4 h-4" />
@@ -259,6 +267,13 @@ const Plants = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate(`/plants/edit/${clone.id}`)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

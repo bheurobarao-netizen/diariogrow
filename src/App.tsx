@@ -9,6 +9,7 @@ import Layout from "@/components/Layout";
 import Timeline from "./pages/Timeline";
 import Plants from "./pages/Plants";
 import NewPlant from "./pages/NewPlant";
+import EditPlant from "./pages/EditPlant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => {
                 <Route path="/" element={<Timeline />} />
                 <Route path="/plants" element={<Plants />} />
                 <Route path="/plants/new" element={<NewPlant />} />
+                <Route path="/plants/edit/:id" element={<EditPlant />} />
                 <Route path="/calendar" element={<div className="p-4">Calendário (em breve)</div>} />
                 <Route path="/new" element={<div className="p-4">Nova Entrada (em breve)</div>} />
                 <Route path="/gallery" element={<div className="p-4">Galeria (em breve)</div>} />
