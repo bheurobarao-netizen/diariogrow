@@ -12,6 +12,9 @@ interface PlantState {
   getPlant: (id: number) => Promise<Plant | undefined>;
   getMotherPlants: () => Promise<Plant[]>;
   getClonesByMother: (motherId: number) => Promise<Plant[]>;
+  movePlant: (plantId: number, newParentId: number | null) => Promise<void>;
+  convertToMother: (plantId: number) => Promise<void>;
+  canMove: (plantId: number, newParentId: number | null) => Promise<boolean>;
 }
 
 const generatePlantCode = async (origem: 'semente' | 'clone', maeId?: number): Promise<string> => {
@@ -47,7 +50,6 @@ export const usePlantStore = create<PlantState>((set, get) => ({
     try {
       console.log('Creating plant with data:', plantData);
       
-      // Calculate generation for clones
       let geracao = 0;
       if (plantData.origem === 'clone' && plantData.maeId) {
         const mae = await db.plants.get(plantData.maeId);
@@ -59,7 +61,6 @@ export const usePlantStore = create<PlantState>((set, get) => ({
       const codigo = await generatePlantCode(plantData.origem, plantData.maeId);
       console.log('Generated code:', codigo);
       
-      // Generate QR code with temporary URL
       const tempId = Date.now();
       const qrCodeData = await QRCode.toDataURL(`${window.location.origin}/plants/${tempId}`);
       console.log('Generated QR code');
@@ -78,7 +79,6 @@ export const usePlantStore = create<PlantState>((set, get) => ({
       const id = await db.plants.add(plant as Plant);
       console.log('Plant created with id:', id);
       
-      // Update QR code with correct plant ID
       const finalQrCodeData = await QRCode.toDataURL(`${window.location.origin}/plants/${id}`);
       await db.plants.update(id, { qrCodeData: finalQrCodeData });
       
@@ -129,4 +129,72 @@ export const usePlantStore = create<PlantState>((set, get) => ({
   getClonesByMother: async (motherId) => {
     return await db.plants.where('maeId').equals(motherId).toArray();
   },
+
+  movePlant: async (plantId, newParentId) => {
+    const canMoveResult = await get().canMove(plantId, newParentId);
+    if (!canMoveResult) {
+      throw new Error('Não é possível mover: criaria um loop na hierarquia');
+    }
+
+    let newGeneration = 0;
+    if (newParentId) {
+      const newParent = await db.plants.get(newParentId);
+      if (newParent) {
+        newGeneration = newParent.geracao + 1;
+      }
+    }
+
+    await db.plants.update(plantId, {
+      maeId: newParentId,
+      geracao: newGeneration,
+    });
+
+    await updateDescendantsGeneration(plantId, newGeneration);
+    await get().fetchPlants();
+  },
+
+  convertToMother: async (plantId) => {
+    const plant = await db.plants.get(plantId);
+    if (!plant) throw new Error('Planta não encontrada');
+
+    const year = new Date().getFullYear();
+    const count = await db.plants.where('origem').equals('semente').count();
+    const newCode = `PL-${year}-${String(count + 1).padStart(3, '0')}`;
+
+    await db.plants.update(plantId, {
+      origem: 'semente',
+      maeId: undefined,
+      geracao: 0,
+      codigo: newCode,
+    });
+
+    await updateDescendantsGeneration(plantId, 0);
+    await get().fetchPlants();
+  },
+
+  canMove: async (plantId, newParentId) => {
+    if (!newParentId) return true;
+    return !(await checkIfDescendant(plantId, newParentId));
+  },
 }));
+
+async function checkIfDescendant(sourceId: number, targetId: number): Promise<boolean> {
+  if (sourceId === targetId) return true;
+
+  const target = await db.plants.get(targetId);
+  if (!target || !target.maeId) return false;
+
+  return checkIfDescendant(sourceId, target.maeId);
+}
+
+async function updateDescendantsGeneration(parentId: number, parentGeneration: number): Promise<void> {
+  const children = await db.plants.where('maeId').equals(parentId).toArray();
+  if (children.length === 0) return;
+
+  const newGeneration = parentGeneration + 1;
+
+  for (const child of children) {
+    await db.plants.update(child.id!, { geracao: newGeneration });
+    await updateDescendantsGeneration(child.id!, newGeneration);
+  }
+}

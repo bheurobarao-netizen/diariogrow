@@ -328,20 +328,28 @@ export type Database = {
       }
       plants: {
         Row: {
+          batch: string | null
+          birth_date: string | null
           breeder: string | null
+          breeding_event_id: string | null
           code: string
           created_at: string | null
+          current_method: string | null
           current_phase: string
+          father_plant_id: string | null
           flower_start_date: string | null
+          generation: number | null
           genetics: string | null
           germination_date: string | null
           harvest_date: string | null
           id: string
+          is_alive: boolean | null
           name: string
           notes: string | null
           origin: string
           parent_plant_id: string | null
           phase_start_date: string | null
+          phenotype_notes: string | null
           qr_code: string | null
           status: string | null
           strain: string
@@ -351,20 +359,28 @@ export type Database = {
           veg_start_date: string | null
         }
         Insert: {
+          batch?: string | null
+          birth_date?: string | null
           breeder?: string | null
+          breeding_event_id?: string | null
           code: string
           created_at?: string | null
+          current_method?: string | null
           current_phase: string
+          father_plant_id?: string | null
           flower_start_date?: string | null
+          generation?: number | null
           genetics?: string | null
           germination_date?: string | null
           harvest_date?: string | null
           id?: string
+          is_alive?: boolean | null
           name: string
           notes?: string | null
           origin: string
           parent_plant_id?: string | null
           phase_start_date?: string | null
+          phenotype_notes?: string | null
           qr_code?: string | null
           status?: string | null
           strain: string
@@ -374,20 +390,28 @@ export type Database = {
           veg_start_date?: string | null
         }
         Update: {
+          batch?: string | null
+          birth_date?: string | null
           breeder?: string | null
+          breeding_event_id?: string | null
           code?: string
           created_at?: string | null
+          current_method?: string | null
           current_phase?: string
+          father_plant_id?: string | null
           flower_start_date?: string | null
+          generation?: number | null
           genetics?: string | null
           germination_date?: string | null
           harvest_date?: string | null
           id?: string
+          is_alive?: boolean | null
           name?: string
           notes?: string | null
           origin?: string
           parent_plant_id?: string | null
           phase_start_date?: string | null
+          phenotype_notes?: string | null
           qr_code?: string | null
           status?: string | null
           strain?: string
@@ -397,6 +421,20 @@ export type Database = {
           veg_start_date?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "plants_breeding_event_id_fkey"
+            columns: ["breeding_event_id"]
+            isOneToOne: false
+            referencedRelation: "breeding_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plants_father_plant_id_fkey"
+            columns: ["father_plant_id"]
+            isOneToOne: false
+            referencedRelation: "plants"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "plants_parent_plant_id_fkey"
             columns: ["parent_plant_id"]
