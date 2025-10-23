@@ -32,6 +32,7 @@ import Equipment from "./pages/Equipment";
 import NewEquipment from "./pages/NewEquipment";
 import EditEquipment from "./pages/EditEquipment";
 import SmartHome from "./pages/SmartHome";
+import Backup from "./pages/Backup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -371,6 +372,18 @@ const App = () => {
                 session ? (
                   <Layout>
                     <SmartHome />
+                  </Layout>
+                ) : (
+                  <Navigate to="/auth" replace />
+                )
+              }
+            />
+            <Route
+              path="/backup"
+              element={
+                session ? (
+                  <Layout>
+                    <Backup />
                   </Layout>
                 ) : (
                   <Navigate to="/auth" replace />

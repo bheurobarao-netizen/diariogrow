@@ -4,7 +4,9 @@ import { useColheitaStore } from '@/stores/colheitaStore';
 import { usePlantStore } from '@/stores/plantStore';
 import { useTentStore } from '@/stores/tentStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, TrendingUp, Home, Leaf } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BarChart3, TrendingUp, Home, Leaf, Database } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   LineChart,
   Line,
@@ -28,6 +30,7 @@ import {
 } from '@/components/ui/select';
 
 const Stats = () => {
+  const navigate = useNavigate();
   const { entries, fetchEntries, loading: entriesLoading } = useEntryStore();
   const { colheitas, fetchColheitas, loading: colheitasLoading } = useColheitaStore();
   const { plants, fetchPlants, loading: plantsLoading } = usePlantStore();
@@ -199,6 +202,25 @@ const Stats = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Backup Card */}
+      <Card className="border-primary/20 bg-gradient-to-br from-card to-primary/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="w-5 h-5" />
+            Backup e Restauração
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Faça backup dos seus dados para uso offline ou restaure de um backup anterior.
+          </p>
+          <Button onClick={() => navigate('/backup')} className="w-full sm:w-auto">
+            <Database className="w-4 h-4 mr-2" />
+            Gerenciar Backups
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Environmental Data Chart */}
       <Card>
