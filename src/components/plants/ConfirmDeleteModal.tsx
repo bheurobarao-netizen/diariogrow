@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { usePlantStore } from '@/stores/plantStore';
@@ -47,11 +47,11 @@ export function ConfirmDeleteModal({ plant, open, onOpenChange, onSuccess }: Con
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     if (open) {
       checkDescendants();
     }
-  });
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
