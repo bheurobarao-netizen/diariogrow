@@ -131,16 +131,22 @@ const NewEntry = () => {
   };
 
   const handleMediaUpload = (urls: string[]) => {
-    const photos = urls.filter((url) =>
-      ['.jpg', '.jpeg', '.png', '.gif', '.webp'].some((ext) =>
-        url.toLowerCase().endsWith(ext)
-      )
-    );
-    const videos = urls.filter((url) =>
-      ['.mp4', '.mov', '.avi', '.webm', '.mkv'].some((ext) =>
-        url.toLowerCase().endsWith(ext)
-      )
-    );
+    // Remove query parameters from URL before checking extension
+    const getPathWithoutQuery = (url: string) => url.split('?')[0];
+    
+    const photos = urls.filter((url) => {
+      const path = getPathWithoutQuery(url).toLowerCase();
+      return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].some((ext) =>
+        path.endsWith(ext)
+      );
+    });
+    
+    const videos = urls.filter((url) => {
+      const path = getPathWithoutQuery(url).toLowerCase();
+      return ['.mp4', '.mov', '.avi', '.webm', '.mkv'].some((ext) =>
+        path.endsWith(ext)
+      );
+    });
 
     setFormData((prev) => ({
       ...prev,
