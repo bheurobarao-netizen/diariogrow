@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
 import { PlantPhase } from '@/lib/db';
@@ -30,7 +31,7 @@ const NewEntry = () => {
 
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
-    plantId: preselectedPlantId ? Number(preselectedPlantId) : undefined,
+    plantIds: preselectedPlantId ? [Number(preselectedPlantId)] : [] as number[],
     tentId: undefined as number | undefined,
     fase: '' as PlantPhase | '',
     content: '',
@@ -73,37 +74,49 @@ const NewEntry = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      await createEntry({
-        date: formData.date,
-        plantId: formData.plantId,
-        tentId: formData.tentId,
-        fase: formData.fase || undefined,
-        content: formData.content,
-        photos: formData.photos,
-        videos: formData.videos,
-        
-        temperaturaMin: formData.temperaturaMin ? parseFloat(formData.temperaturaMin) : undefined,
-        temperaturaMax: formData.temperaturaMax ? parseFloat(formData.temperaturaMax) : undefined,
-        umidadeMin: formData.umidadeMin ? parseFloat(formData.umidadeMin) : undefined,
-        umidadeMax: formData.umidadeMax ? parseFloat(formData.umidadeMax) : undefined,
-        distanciaLuzCm: formData.distanciaLuzCm ? parseFloat(formData.distanciaLuzCm) : undefined,
-        
-        phAguaEntrada: formData.phAguaEntrada ? parseFloat(formData.phAguaEntrada) : undefined,
-        ecAguaEntrada: formData.ecAguaEntrada ? parseFloat(formData.ecAguaEntrada) : undefined,
-        volumeTotalLitros: formData.volumeTotalLitros ? parseFloat(formData.volumeTotalLitros) : undefined,
-        phAguaSaida: formData.phAguaSaida ? parseFloat(formData.phAguaSaida) : undefined,
-        ecAguaSaida: formData.ecAguaSaida ? parseFloat(formData.ecAguaSaida) : undefined,
-        
-        nutrientesAplicados: formData.nutrientesAplicados,
-        acoesRealizadas: formData.acoesRealizadas,
-        problemasObservados: formData.problemasObservados,
-        acoesCorretivas: formData.acoesCorretivas,
+    if (formData.plantIds.length === 0) {
+      toast({
+        title: 'Atenção',
+        description: 'Selecione pelo menos uma planta',
+        variant: 'destructive',
       });
+      return;
+    }
+
+    try {
+      // Criar uma entrada para cada planta selecionada
+      for (const plantId of formData.plantIds) {
+        await createEntry({
+          date: formData.date,
+          plantId: plantId,
+          tentId: formData.tentId,
+          fase: formData.fase || undefined,
+          content: formData.content,
+          photos: formData.photos,
+          videos: formData.videos,
+          
+          temperaturaMin: formData.temperaturaMin ? parseFloat(formData.temperaturaMin) : undefined,
+          temperaturaMax: formData.temperaturaMax ? parseFloat(formData.temperaturaMax) : undefined,
+          umidadeMin: formData.umidadeMin ? parseFloat(formData.umidadeMin) : undefined,
+          umidadeMax: formData.umidadeMax ? parseFloat(formData.umidadeMax) : undefined,
+          distanciaLuzCm: formData.distanciaLuzCm ? parseFloat(formData.distanciaLuzCm) : undefined,
+          
+          phAguaEntrada: formData.phAguaEntrada ? parseFloat(formData.phAguaEntrada) : undefined,
+          ecAguaEntrada: formData.ecAguaEntrada ? parseFloat(formData.ecAguaEntrada) : undefined,
+          volumeTotalLitros: formData.volumeTotalLitros ? parseFloat(formData.volumeTotalLitros) : undefined,
+          phAguaSaida: formData.phAguaSaida ? parseFloat(formData.phAguaSaida) : undefined,
+          ecAguaSaida: formData.ecAguaSaida ? parseFloat(formData.ecAguaSaida) : undefined,
+          
+          nutrientesAplicados: formData.nutrientesAplicados,
+          acoesRealizadas: formData.acoesRealizadas,
+          problemasObservados: formData.problemasObservados,
+          acoesCorretivas: formData.acoesCorretivas,
+        });
+      }
 
       toast({
         title: 'Sucesso',
-        description: 'Registro criado com sucesso!',
+        description: `${formData.plantIds.length} registro(s) criado(s) com sucesso!`,
       });
 
       navigate('/');
@@ -210,25 +223,49 @@ const NewEntry = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="plant">Planta</Label>
-              <Select
-                value={formData.plantId?.toString()}
-                onValueChange={(value) => setFormData({ ...formData, plantId: Number(value) })}
-              >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma planta" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover z-50">
-                    {plants
-                      .filter((p) => p.viva)
-                      .map((plant) => (
-                        <SelectItem key={plant.id} value={plant.id!.toString()}>
-                          {plant.apelido} ({plant.codigo})
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+              <Label>Plantas (selecione uma ou mais)</Label>
+              <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-2 bg-background">
+                {plants
+                  .filter((p) => p.viva)
+                  .map((plant) => (
+                    <div key={plant.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`plant-${plant.id}`}
+                        checked={formData.plantIds.includes(plant.id!)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setFormData({
+                              ...formData,
+                              plantIds: [...formData.plantIds, plant.id!]
+                            });
+                          } else {
+                            setFormData({
+                              ...formData,
+                              plantIds: formData.plantIds.filter(id => id !== plant.id)
+                            });
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={`plant-${plant.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {plant.apelido} ({plant.codigo})
+                      </label>
+                    </div>
+                  ))}
+                {plants.filter((p) => p.viva).length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-2">
+                    Nenhuma planta ativa encontrada
+                  </p>
+                )}
               </div>
+              {formData.plantIds.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {formData.plantIds.length} planta(s) selecionada(s)
+                </p>
+              )}
+            </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
