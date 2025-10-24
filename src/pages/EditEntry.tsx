@@ -5,6 +5,7 @@ import { usePlantStore } from '@/stores/plantStore';
 import { useTentStore } from '@/stores/tentStore';
 import { useInsumoStore } from '@/stores/insumoStore';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +30,7 @@ const EditEntry = () => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     plantId: undefined as number | undefined,
+    plantIds: [] as number[],
     tentId: undefined as number | undefined,
     fase: undefined as PlantPhase | undefined,
     
@@ -94,6 +96,7 @@ const EditEntry = () => {
         setFormData({
           date: entry.date,
           plantId: entry.plantId,
+          plantIds: entry.plantIds || (entry.plantId ? [entry.plantId] : []),
           tentId: entry.tentId,
           fase: entry.fase,
           temperaturaMin: entry.temperaturaMin,
@@ -137,7 +140,8 @@ const EditEntry = () => {
     try {
       await updateEntry(Number(id), {
         date: formData.date,
-        plantId: formData.plantId,
+        plantId: formData.plantIds.length > 0 ? formData.plantIds[0] : undefined,
+        plantIds: formData.plantIds,
         tentId: formData.tentId,
         fase: formData.fase,
         temperaturaMin: formData.temperaturaMin,
@@ -277,23 +281,51 @@ const EditEntry = () => {
             />
           </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="plant">Planta</Label>
-              <Select
-                value={formData.plantId?.toString()}
-                onValueChange={(value) => setFormData({ ...formData, plantId: value ? Number(value) : undefined })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma planta" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
-                  {plants.filter(p => p.viva).map((plant) => (
-                    <SelectItem key={plant.id} value={plant.id!.toString()}>
-                      {plant.apelido} ({plant.codigo})
-                    </SelectItem>
+            <div className="space-y-2 col-span-2">
+              <Label>Plantas (selecione uma ou mais)</Label>
+              <div className="border rounded-lg p-3 max-h-48 overflow-y-auto space-y-2 bg-background">
+                {plants
+                  .filter((p) => p.viva)
+                  .map((plant) => (
+                    <div key={plant.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`plant-${plant.id}`}
+                        checked={formData.plantIds.includes(plant.id!)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setFormData({
+                              ...formData,
+                              plantIds: [...formData.plantIds, plant.id!],
+                              plantId: plant.id
+                            });
+                          } else {
+                            setFormData({
+                              ...formData,
+                              plantIds: formData.plantIds.filter(id => id !== plant.id),
+                              plantId: formData.plantIds.find(id => id !== plant.id)
+                            });
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={`plant-${plant.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {plant.apelido} ({plant.codigo})
+                      </label>
+                    </div>
                   ))}
-                </SelectContent>
-              </Select>
+                {plants.filter((p) => p.viva).length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-2">
+                    Nenhuma planta ativa encontrada
+                  </p>
+                )}
+              </div>
+              {formData.plantIds.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {formData.plantIds.length} planta(s) selecionada(s)
+                </p>
+              )}
             </div>
           </div>
           

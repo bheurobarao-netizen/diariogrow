@@ -115,6 +115,7 @@ export interface Entry {
   id?: number;
   date: string;
   plantId?: number;
+  plantIds?: number[]; // NEW: Support multiple plants
   tentId?: number;
   fase?: PlantPhase;
   

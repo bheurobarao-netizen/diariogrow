@@ -84,39 +84,38 @@ const NewEntry = () => {
     }
 
     try {
-      // Criar uma entrada para cada planta selecionada
-      for (const plantId of formData.plantIds) {
-        await createEntry({
-          date: formData.date,
-          plantId: plantId,
-          tentId: formData.tentId,
-          fase: formData.fase || undefined,
-          content: formData.content,
-          photos: formData.photos,
-          videos: formData.videos,
-          
-          temperaturaMin: formData.temperaturaMin ? parseFloat(formData.temperaturaMin) : undefined,
-          temperaturaMax: formData.temperaturaMax ? parseFloat(formData.temperaturaMax) : undefined,
-          umidadeMin: formData.umidadeMin ? parseFloat(formData.umidadeMin) : undefined,
-          umidadeMax: formData.umidadeMax ? parseFloat(formData.umidadeMax) : undefined,
-          distanciaLuzCm: formData.distanciaLuzCm ? parseFloat(formData.distanciaLuzCm) : undefined,
-          
-          phAguaEntrada: formData.phAguaEntrada ? parseFloat(formData.phAguaEntrada) : undefined,
-          ecAguaEntrada: formData.ecAguaEntrada ? parseFloat(formData.ecAguaEntrada) : undefined,
-          volumeTotalLitros: formData.volumeTotalLitros ? parseFloat(formData.volumeTotalLitros) : undefined,
-          phAguaSaida: formData.phAguaSaida ? parseFloat(formData.phAguaSaida) : undefined,
-          ecAguaSaida: formData.ecAguaSaida ? parseFloat(formData.ecAguaSaida) : undefined,
-          
-          nutrientesAplicados: formData.nutrientesAplicados,
-          acoesRealizadas: formData.acoesRealizadas,
-          problemasObservados: formData.problemasObservados,
-          acoesCorretivas: formData.acoesCorretivas,
-        });
-      }
+      // Criar UMA entrada com múltiplas plantas
+      await createEntry({
+        date: formData.date,
+        plantIds: formData.plantIds,
+        plantId: formData.plantIds[0], // Backward compatibility
+        tentId: formData.tentId,
+        fase: formData.fase || undefined,
+        content: formData.content,
+        photos: formData.photos,
+        videos: formData.videos,
+        
+        temperaturaMin: formData.temperaturaMin ? parseFloat(formData.temperaturaMin) : undefined,
+        temperaturaMax: formData.temperaturaMax ? parseFloat(formData.temperaturaMax) : undefined,
+        umidadeMin: formData.umidadeMin ? parseFloat(formData.umidadeMin) : undefined,
+        umidadeMax: formData.umidadeMax ? parseFloat(formData.umidadeMax) : undefined,
+        distanciaLuzCm: formData.distanciaLuzCm ? parseFloat(formData.distanciaLuzCm) : undefined,
+        
+        phAguaEntrada: formData.phAguaEntrada ? parseFloat(formData.phAguaEntrada) : undefined,
+        ecAguaEntrada: formData.ecAguaEntrada ? parseFloat(formData.ecAguaEntrada) : undefined,
+        volumeTotalLitros: formData.volumeTotalLitros ? parseFloat(formData.volumeTotalLitros) : undefined,
+        phAguaSaida: formData.phAguaSaida ? parseFloat(formData.phAguaSaida) : undefined,
+        ecAguaSaida: formData.ecAguaSaida ? parseFloat(formData.ecAguaSaida) : undefined,
+        
+        nutrientesAplicados: formData.nutrientesAplicados,
+        acoesRealizadas: formData.acoesRealizadas,
+        problemasObservados: formData.problemasObservados,
+        acoesCorretivas: formData.acoesCorretivas,
+      });
 
       toast({
         title: 'Sucesso',
-        description: `${formData.plantIds.length} registro(s) criado(s) com sucesso!`,
+        description: `Entrada criada com ${formData.plantIds.length} planta(s)!`,
       });
 
       navigate('/');

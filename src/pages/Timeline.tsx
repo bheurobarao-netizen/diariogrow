@@ -30,10 +30,14 @@ const Timeline = () => {
     fetchPlants();
   }, [fetchEntries, fetchPlants]);
   
-  const getPlantName = (plantId?: number) => {
-    if (!plantId) return null;
-    const plant = plants.find(p => p.id === plantId);
-    return plant ? `${plant.apelido} (${plant.codigo})` : null;
+  const getPlantNames = (entry: any) => {
+    const plantIdsToLoad = entry.plantIds || (entry.plantId ? [entry.plantId] : []);
+    return plantIdsToLoad
+      .map((id: number) => {
+        const plant = plants.find(p => p.id === id);
+        return plant ? `${plant.apelido} (${plant.codigo})` : null;
+      })
+      .filter(Boolean);
   };
   
   const handleDelete = async (id: number, e: React.MouseEvent) => {
@@ -95,7 +99,7 @@ const Timeline = () => {
       ) : (
         <div className="space-y-4">
           {entries.map((entry) => {
-            const plantName = getPlantName(entry.plantId);
+            const plantNames = getPlantNames(entry);
             
             return (
               <Card key={entry.id} className="p-4 hover:shadow-elegant transition-smooth">
@@ -109,10 +113,14 @@ const Timeline = () => {
                               <CalendarIcon className="w-4 h-4" />
                               {format(new Date(entry.date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                             </div>
-                            {plantName && (
-                              <div className="flex items-center gap-2 text-sm text-primary font-medium mb-2">
-                                <Leaf className="w-4 h-4" />
-                                {plantName}
+                            {plantNames.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mb-2">
+                                {plantNames.map((name, idx) => (
+                                  <div key={idx} className="flex items-center gap-1 text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded-full">
+                                    <Leaf className="w-3 h-3" />
+                                    {name}
+                                  </div>
+                                ))}
                               </div>
                             )}
                             {entry.fase && (

@@ -31,7 +31,7 @@ const EntryDetail = () => {
   const { toast } = useToast();
   
   const [entry, setEntry] = useState<Entry | null>(null);
-  const [plantName, setPlantName] = useState<string>('');
+  const [plantNames, setPlantNames] = useState<string[]>([]);
   const [tentName, setTentName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   
@@ -53,12 +53,17 @@ const EntryDetail = () => {
         
         setEntry(entryData);
         
-        if (entryData.plantId) {
-          const plant = await getPlant(entryData.plantId);
+        // Handle multiple plants
+        const plantIdsToLoad = entryData.plantIds || (entryData.plantId ? [entryData.plantId] : []);
+        const names: string[] = [];
+        
+        for (const plantId of plantIdsToLoad) {
+          const plant = await getPlant(plantId);
           if (plant) {
-            setPlantName(`${plant.apelido} (${plant.codigo})`);
+            names.push(`${plant.apelido} (${plant.codigo})`);
           }
         }
+        setPlantNames(names);
         
         if (entryData.tentId) {
           const tent = await getTent(entryData.tentId);
@@ -165,13 +170,19 @@ const EntryDetail = () => {
       
       {/* Basic Info */}
       <Card className="p-6 space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {plantName && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {plantNames.length > 0 && (
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Planta</div>
-              <div className="flex items-center gap-2 text-primary font-medium">
-                <Leaf className="w-4 h-4" />
-                {plantName}
+              <div className="text-sm text-muted-foreground mb-1">
+                {plantNames.length === 1 ? 'Planta' : 'Plantas'}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {plantNames.map((name, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-primary font-medium px-3 py-1 bg-primary/10 rounded-full">
+                    <Leaf className="w-4 h-4" />
+                    {name}
+                  </div>
+                ))}
               </div>
             </div>
           )}
