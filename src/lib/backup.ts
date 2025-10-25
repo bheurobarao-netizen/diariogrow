@@ -21,7 +21,7 @@ export interface BackupData {
 /**
  * Exporta todos os dados do banco local para um objeto JSON
  */
-export async function exportBackup(userEmail: string): Promise<BackupData> {
+export async function exportBackup(userEmail = 'local-user'): Promise<BackupData> {
   const [
     plants,
     entries,

@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
-import Auth from "./pages/Auth";
+import { useAuthStore } from "@/stores/authStore";
+import LoginScreen from "@/components/auth/LoginScreen";
 import Layout from "@/components/Layout";
 import Timeline from "./pages/Timeline";
 import Plants from "./pages/Plants";
@@ -31,41 +29,13 @@ import Stats from "./pages/Stats";
 import Equipment from "./pages/Equipment";
 import NewEquipment from "./pages/NewEquipment";
 import EditEquipment from "./pages/EditEquipment";
-import SmartHome from "./pages/SmartHome";
 import Backup from "./pages/Backup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setLoading(false);
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -75,318 +45,306 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route 
-              path="/auth" 
-              element={session ? <Navigate to="/" replace /> : <Auth />} 
+              path="/login" 
+              element={isAuthenticated ? <Navigate to="/" replace /> : <LoginScreen />} 
             />
             <Route
               path="/"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Timeline />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/plants"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Plants />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/plants/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <PlantDetail />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/plants/new"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <NewPlant />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/plants/edit/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EditPlant />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/calendar"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Calendar />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/new"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <NewEntry />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/tents"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Tents />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/tents/new"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <NewTent />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/tents/edit/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EditTent />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/lineage"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Lineage />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/insumos"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Insumos />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/insumos/new"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <NewInsumo />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/insumos/edit/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EditInsumo />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/entry/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EntryDetail />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/entry/edit/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EditEntry />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/colheitas"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Colheitas />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/colheitas/new"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <NewColheita />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/colheitas/edit/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EditColheita />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/equipment"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Equipment />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/equipment/new"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <NewEquipment />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/equipment/edit/:id"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <EditEquipment />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/gallery"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <div className="p-4">Galeria (em breve)</div>
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/stats"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Stats />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
-                )
-              }
-            />
-            <Route
-              path="/smart-home"
-              element={
-                session ? (
-                  <Layout>
-                    <SmartHome />
-                  </Layout>
-                ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />
             <Route
               path="/backup"
               element={
-                session ? (
+                isAuthenticated ? (
                   <Layout>
                     <Backup />
                   </Layout>
                 ) : (
-                  <Navigate to="/auth" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />

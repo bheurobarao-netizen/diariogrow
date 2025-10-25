@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload, X, Image as ImageIcon, Video } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Upload, X, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface FileUploaderProps {
@@ -38,34 +37,18 @@ const FileUploader = ({
     setUploading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Usuário não autenticado');
-      }
-
       const uploadedUrls: string[] = [];
 
       for (const file of Array.from(selectedFiles)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        // Convert to base64 for local storage
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
 
-        const { error: uploadError } = await supabase.storage
-          .from('plant-media')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false,
-          });
-
-        if (uploadError) throw uploadError;
-
-        // Use signed URLs since bucket is now private (24 hour expiry)
-        const { data: signedData, error: signedError } = await supabase.storage
-          .from('plant-media')
-          .createSignedUrl(fileName, 86400); // 24 hours
-
-        if (signedError) throw signedError;
-
-        uploadedUrls.push(signedData.signedUrl);
+        uploadedUrls.push(base64);
       }
 
       const newFiles = [...files, ...uploadedUrls];
@@ -98,8 +81,13 @@ const FileUploader = ({
   };
 
   const getFileType = (url: string): 'image' | 'video' => {
+    // Check if it's base64
+    if (url.startsWith('data:video/')) return 'video';
+    if (url.startsWith('data:image/')) return 'image';
+    
+    // Fallback to extension check
     const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv'];
-    return videoExtensions.some((ext) => url.toLowerCase().endsWith(ext))
+    return videoExtensions.some((ext) => url.toLowerCase().includes(ext))
       ? 'video'
       : 'image';
   };

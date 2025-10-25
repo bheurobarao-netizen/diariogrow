@@ -6,7 +6,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import {
   exportBackup,
   downloadBackup,
@@ -35,12 +34,7 @@ const Backup = () => {
   const handleExport = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user?.email) {
-        throw new Error('Usuário não encontrado');
-      }
-
-      const backup = await exportBackup(user.email);
+      const backup = await exportBackup();
       downloadBackup(backup);
 
       toast({

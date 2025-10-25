@@ -1,73 +1,104 @@
-# Welcome to your Lovable project
+# Grow Diary - Versão Offline
 
-## Project info
+Diário de cultivo 100% local e offline. Todos os dados são armazenados no navegador usando IndexedDB.
 
-**URL**: https://lovable.dev/projects/5f08dc72-3ebf-46a7-b5d7-f6b36810288c
+## 🚀 Instalação
 
-## How can I edit this code?
+```bash
+# Instalar dependências
+npm install
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/5f08dc72-3ebf-46a7-b5d7-f6b36810288c) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Iniciar o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+O aplicativo estará disponível em: `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🔐 Autenticação
 
-**Use GitHub Codespaces**
+Na primeira vez que você acessar, será solicitado criar um PIN de 4 dígitos.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**Senha padrão do administrador:** `12345grow`
 
-## What technologies are used for this project?
+Você pode alterar a senha padrão editando o arquivo `.env`:
 
-This project is built with:
+```
+VITE_ADMIN_PASSWORD=sua_senha_aqui
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 💾 Backup e Restauração
 
-## How can I deploy this project?
+### Criar Backup
 
-Simply open [Lovable](https://lovable.dev/projects/5f08dc72-3ebf-46a7-b5d7-f6b36810288c) and click on Share -> Publish.
+1. Acesse a página de Backup no menu
+2. Clique em "Exportar Backup"
+3. Um arquivo JSON será baixado com todos os seus dados
 
-## Can I connect a custom domain to my Lovable project?
+### Restaurar Backup
 
-Yes, you can!
+1. Acesse a página de Backup
+2. Clique em "Selecionar Arquivo"
+3. Escolha o arquivo de backup (.json)
+4. Selecione o modo de importação:
+   - **Mesclar**: Mantém os dados existentes e adiciona os novos
+   - **Substituir**: Remove todos os dados atuais e carrega apenas o backup
+5. Clique em "Importar Dados"
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📦 Armazenamento
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Todos os dados são armazenados localmente no navegador usando:
+- **Dexie.js** (IndexedDB) para dados estruturados
+- **LocalStorage** para autenticação
+- **Base64** para imagens e vídeos
+
+## 🌐 Funcionamento Offline
+
+O aplicativo funciona **100% offline** após a primeira carga. Todas as funcionalidades estão disponíveis sem conexão com internet:
+
+- ✅ Gerenciamento de plantas
+- ✅ Diário de cultivo
+- ✅ Tendas e equipamentos
+- ✅ Insumos e colheitas
+- ✅ Estatísticas e calendário
+- ✅ Backup e restauração
+
+## 🔧 Tecnologias
+
+- **React** + **TypeScript**
+- **Vite** (build tool)
+- **Dexie.js** (IndexedDB)
+- **Zustand** (gerenciamento de estado)
+- **Tailwind CSS** (estilização)
+- **Shadcn/ui** (componentes)
+
+## 📁 Estrutura de Dados
+
+O backup contém as seguintes tabelas:
+- `plants` - Informações das plantas
+- `entries` - Entradas do diário
+- `tents` - Tendas de cultivo
+- `equipment` - Equipamentos
+- `insumos` - Nutrientes e suplementos
+- `colheitas` - Registros de colheita
+- `curas` - Processo de cura
+- `tasks` - Tarefas e lembretes
+- `breedingEvents` - Eventos de breeding
+
+## ⚠️ Importante
+
+- Os dados são armazenados apenas no navegador local
+- Se limpar os dados do navegador, perderá todas as informações
+- **Faça backups regulares!**
+- Os backups são arquivos JSON que podem ser guardados em qualquer lugar
+
+## 🛠️ Build para Produção
+
+```bash
+npm run build
+```
+
+Os arquivos otimizados serão gerados na pasta `dist/`.
+
+## 📝 Licença
+
+Este projeto é de uso pessoal e privado.

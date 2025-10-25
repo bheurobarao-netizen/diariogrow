@@ -1,4 +1,0 @@
-project_id = "pbyfjzwewjmjvqjvdoon"
-
-[functions.smart-home-devices]
-verify_jwt = true

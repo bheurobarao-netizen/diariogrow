@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -14,6 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const logout = useAuthStore((state) => state.logout);
   
   const navItems = [
     { path: '/', icon: Home, label: 'Início' },
@@ -27,21 +28,13 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/insumos', icon: Package, label: 'Insumos' },
   ];
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: 'Erro ao sair',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
-      navigate('/auth');
-      toast({
-        title: 'Logout realizado',
-        description: 'Até logo!',
-      });
-    }
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    toast({
+      title: 'Logout realizado',
+      description: 'Até logo!',
+    });
   };
   
   return (
