@@ -19,8 +19,8 @@ const LoginScreen = () => {
       // Primeiro acesso - criar PIN
       if (pin.length < 4) {
         toast({
-          title: 'PIN muito curto',
-          description: 'O PIN deve ter pelo menos 4 dígitos',
+          title: 'Senha muito curta',
+          description: 'A senha deve ter pelo menos 4 caracteres',
           variant: 'destructive',
         });
         return;
@@ -28,8 +28,8 @@ const LoginScreen = () => {
       
       if (pin !== confirmPin) {
         toast({
-          title: 'PINs não conferem',
-          description: 'Digite o mesmo PIN nos dois campos',
+          title: 'Senhas não conferem',
+          description: 'Digite a mesma senha nos dois campos',
           variant: 'destructive',
         });
         return;
@@ -49,7 +49,7 @@ const LoginScreen = () => {
         });
       } else {
         toast({
-          title: 'PIN incorreto',
+          title: 'Senha incorreta',
           description: 'Tente novamente',
           variant: 'destructive',
         });
@@ -74,39 +74,35 @@ const LoginScreen = () => {
           <div className="flex items-center gap-2 text-primary mb-4">
             <Lock className="w-5 h-5" />
             <h2 className="text-xl font-semibold">
-              {isFirstTime ? 'Criar PIN' : 'Login'}
+              {isFirstTime ? 'Criar Senha' : 'Login'}
             </h2>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                {isFirstTime ? 'Escolha seu PIN (4-8 dígitos)' : 'Digite seu PIN'}
+                {isFirstTime ? 'Escolha sua senha (4-20 caracteres)' : 'Digite sua senha'}
               </label>
               <Input
                 type="password"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={8}
+                maxLength={20}
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                placeholder="••••"
-                className="text-center text-2xl tracking-widest"
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="••••••••"
+                className="text-center text-xl tracking-wide"
               />
             </div>
             
             {isFirstTime && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Confirme seu PIN</label>
+                <label className="text-sm font-medium">Confirme sua senha</label>
                 <Input
                   type="password"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={8}
+                  maxLength={20}
                   value={confirmPin}
-                  onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
-                  placeholder="••••"
-                  className="text-center text-2xl tracking-widest"
+                  onChange={(e) => setConfirmPin(e.target.value)}
+                  placeholder="••••••••"
+                  className="text-center text-xl tracking-wide"
                 />
               </div>
             )}
