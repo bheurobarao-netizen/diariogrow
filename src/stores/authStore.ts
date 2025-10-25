@@ -9,7 +9,7 @@ interface AuthState {
   logout: () => void;
 }
 
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '12345grow';
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || '12345';
 
 export const useAuthStore = create<AuthState>()(
   persist(
