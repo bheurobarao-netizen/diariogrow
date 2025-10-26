@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous, Zap } from 'lucide-react';
+import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous, Zap, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/equipment', icon: Zap, label: 'Equipamentos' },
     { path: '/colheitas', icon: Leaf, label: 'Colheitas' },
     { path: '/insumos', icon: Package, label: 'Insumos' },
+    { path: '/calculators', icon: Calculator, label: 'Calc' },
   ];
 
   const handleLogout = () => {

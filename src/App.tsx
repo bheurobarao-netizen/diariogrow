@@ -30,6 +30,7 @@ import Equipment from "./pages/Equipment";
 import NewEquipment from "./pages/NewEquipment";
 import EditEquipment from "./pages/EditEquipment";
 import Backup from "./pages/Backup";
+import Calculators from "./pages/Calculators";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -342,6 +343,18 @@ const App = () => {
                 isAuthenticated ? (
                   <Layout>
                     <Backup />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/calculators"
+              element={
+                isAuthenticated ? (
+                  <Layout>
+                    <Calculators />
                   </Layout>
                 ) : (
                   <Navigate to="/login" replace />
