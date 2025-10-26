@@ -54,6 +54,9 @@ const Insumos = () => {
     return labels[tipo] || tipo;
   };
   
+  // Calculate total price
+  const totalPrice = insumos.reduce((sum, insumo) => sum + (insumo.preco || 0), 0);
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -71,6 +74,11 @@ const Insumos = () => {
             Insumos
           </h1>
           <p className="text-muted-foreground mt-1">Catálogo de produtos e materiais</p>
+          {insumos.length > 0 && (
+            <p className="text-sm text-muted-foreground mt-2">
+              <span className="font-semibold">Investimento Total:</span> R$ {totalPrice.toFixed(2)}
+            </p>
+          )}
         </div>
         <Button onClick={() => navigate('/insumos/new')} className="gap-2">
           <Plus className="w-4 h-4" />
@@ -105,6 +113,13 @@ const Insumos = () => {
                   {getTipoLabel(insumo.tipo)}
                 </span>
               </div>
+              
+              {insumo.preco && (
+                <div className="text-sm">
+                  <p className="text-muted-foreground text-xs">Preço</p>
+                  <p className="font-medium">R$ {insumo.preco.toFixed(2)}</p>
+                </div>
+              )}
               
               {insumo.observacoes && (
                 <p className="text-sm text-muted-foreground line-clamp-2">

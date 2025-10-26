@@ -51,6 +51,7 @@ const equipmentSchema = z.object({
   tentId: z.coerce.number().optional(),
   consumoWatts: z.coerce.number().optional(),
   numeroTomadas: z.coerce.number().optional(),
+  preco: z.coerce.number().optional(),
   smartLife: z.boolean().default(false),
   smartLifeControlType: z.enum(['tomada', 'dimmer']).optional(),
   smartLifeControlModel: z.string().optional(),
@@ -78,6 +79,7 @@ const NewEquipment = () => {
       tentId: 0,
       consumoWatts: 0,
       numeroTomadas: 1,
+      preco: 0,
       smartLife: false,
       smartLifeControlType: undefined,
       smartLifeControlModel: '',
@@ -96,6 +98,7 @@ const NewEquipment = () => {
         tentId: data.tentId || 0,
         consumoWatts: data.consumoWatts || 0,
         numeroTomadas: data.numeroTomadas || 1,
+        preco: data.preco,
         smartLife: data.smartLife || false,
         smartLifeControlType: data.smartLifeControlType,
         smartLifeControlModel: data.smartLifeControlModel,
@@ -306,6 +309,21 @@ const NewEquipment = () => {
                 )}
               />
             </div>
+
+            {/* Preço */}
+            <FormField
+              control={form.control}
+              name="preco"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Preço (R$)</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Smart Life */}
             <FormField

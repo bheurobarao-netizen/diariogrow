@@ -38,6 +38,7 @@ export interface Equipment {
   smartLife: boolean;
   smartLifeControlType?: 'tomada' | 'dimmer';
   smartLifeControlModel?: string;
+  preco?: number;
   notas?: string;
   createdAt: string;
   updatedAt: string;
@@ -48,6 +49,7 @@ export interface Insumo {
   nomeProduto: string;
   marca?: string;
   tipo: 'nutriente' | 'suplemento' | 'pesticida' | 'substrato' | 'outro';
+  preco?: number;
   observacoes?: string;
   createdAt: string;
   updatedAt: string;

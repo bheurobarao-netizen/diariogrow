@@ -120,6 +120,9 @@ const Equipment = () => {
     items: equipment.filter((e) => e.tentId === tent.id),
   }));
 
+  // Calculate total price of all equipment
+  const totalPrice = equipment.reduce((sum, item) => sum + (item.preco || 0), 0);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -137,6 +140,11 @@ const Equipment = () => {
             Equipamentos
           </h1>
           <p className="text-muted-foreground mt-1">Gerenciamento de hardware</p>
+          {equipment.length > 0 && (
+            <p className="text-sm text-muted-foreground mt-2">
+              <span className="font-semibold">Investimento Total:</span> R$ {totalPrice.toFixed(2)}
+            </p>
+          )}
         </div>
         <Button onClick={() => navigate('/equipment/new')} className="gap-2">
           <Plus className="w-4 h-4" />
@@ -212,6 +220,12 @@ const Equipment = () => {
                           <p className="text-muted-foreground text-xs">Tomadas</p>
                           <p className="font-medium">{item.numeroTomadas}</p>
                         </div>
+                        {item.preco && (
+                          <div className="col-span-2">
+                            <p className="text-muted-foreground text-xs">Preço</p>
+                            <p className="font-medium">R$ {item.preco.toFixed(2)}</p>
+                          </div>
+                        )}
                       </div>
 
                       {!item.smartLife && item.smartLifeControlModel && (

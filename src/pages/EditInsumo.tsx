@@ -21,6 +21,7 @@ const EditInsumo = () => {
     nomeProduto: '',
     marca: '',
     tipo: 'nutriente' as 'nutriente' | 'suplemento' | 'pesticida' | 'substrato' | 'outro',
+    preco: '',
     observacoes: '',
   });
   
@@ -44,6 +45,7 @@ const EditInsumo = () => {
           nomeProduto: insumo.nomeProduto,
           marca: insumo.marca || '',
           tipo: insumo.tipo,
+          preco: insumo.preco?.toString() || '',
           observacoes: insumo.observacoes || '',
         });
         setLoading(false);
@@ -71,6 +73,7 @@ const EditInsumo = () => {
         nomeProduto: formData.nomeProduto,
         marca: formData.marca || undefined,
         tipo: formData.tipo,
+        preco: formData.preco ? parseFloat(formData.preco) : undefined,
         observacoes: formData.observacoes || undefined,
       });
       
@@ -152,6 +155,18 @@ const EditInsumo = () => {
                 <SelectItem value="outro">Outro</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="preco">Preço (R$)</Label>
+            <Input
+              id="preco"
+              type="number"
+              step="0.01"
+              value={formData.preco}
+              onChange={(e) => setFormData({ ...formData, preco: e.target.value })}
+              placeholder="0.00"
+            />
           </div>
           
           <div className="space-y-2">
