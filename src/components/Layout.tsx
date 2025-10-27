@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Plus, BarChart3, LogOut, Sprout, Leaf, Package, TreeDeciduous, Zap, Calculator } from 'lucide-react';
+import { Home, Calendar, Plus, BarChart3, User, Sprout, Leaf, Package, TreeDeciduous, Zap, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -14,7 +14,6 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const logout = useAuthStore((state) => state.logout);
   
   const navItems = [
     { path: '/', icon: Home, label: 'Início' },
@@ -29,8 +28,8 @@ const Layout = ({ children }: LayoutProps) => {
     { path: '/calculators', icon: Calculator, label: 'Calc' },
   ];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/login');
     toast({
       title: 'Logout realizado',
@@ -43,15 +42,16 @@ const Layout = ({ children }: LayoutProps) => {
       <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border px-4 py-3">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <h1 className="text-lg font-semibold text-foreground">Grow Diary</h1>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLogout}
-            className="gap-2"
-          >
-            <LogOut className="w-4 h-4" />
-            Sair
-          </Button>
+          <Link to="/profile">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+            >
+              <User className="w-4 h-4" />
+              Perfil
+            </Button>
+          </Link>
         </div>
       </header>
       <main className="flex-1 overflow-y-auto pb-20">

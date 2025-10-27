@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useAuthStore } from "@/stores/authStore";
+import { supabase } from "@/integrations/supabase/client";
+import { Session } from "@supabase/supabase-js";
 import LoginScreen from "@/components/auth/LoginScreen";
 import Layout from "@/components/Layout";
 import Timeline from "./pages/Timeline";
@@ -32,11 +34,35 @@ import EditEquipment from "./pages/EditEquipment";
 import Backup from "./pages/Backup";
 import Calculators from "./pages/Calculators";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -47,12 +73,12 @@ const App = () => {
           <Routes>
             <Route 
               path="/login" 
-              element={isAuthenticated ? <Navigate to="/" replace /> : <LoginScreen />} 
+              element={!session ? <LoginScreen /> : <Navigate to="/" replace />} 
             />
             <Route
               path="/"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Timeline />
                   </Layout>
@@ -62,9 +88,21 @@ const App = () => {
               }
             />
             <Route
+              path="/profile"
+              element={
+                session ? (
+                  <Layout>
+                    <Profile />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
               path="/plants"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Plants />
                   </Layout>
@@ -76,7 +114,7 @@ const App = () => {
             <Route
               path="/plants/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <PlantDetail />
                   </Layout>
@@ -88,7 +126,7 @@ const App = () => {
             <Route
               path="/plants/new"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <NewPlant />
                   </Layout>
@@ -100,7 +138,7 @@ const App = () => {
             <Route
               path="/plants/edit/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EditPlant />
                   </Layout>
@@ -112,7 +150,7 @@ const App = () => {
             <Route
               path="/calendar"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Calendar />
                   </Layout>
@@ -124,7 +162,7 @@ const App = () => {
             <Route
               path="/new"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <NewEntry />
                   </Layout>
@@ -136,7 +174,7 @@ const App = () => {
             <Route
               path="/tents"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Tents />
                   </Layout>
@@ -148,7 +186,7 @@ const App = () => {
             <Route
               path="/tents/new"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <NewTent />
                   </Layout>
@@ -160,7 +198,7 @@ const App = () => {
             <Route
               path="/tents/edit/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EditTent />
                   </Layout>
@@ -172,7 +210,7 @@ const App = () => {
             <Route
               path="/lineage"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Lineage />
                   </Layout>
@@ -184,7 +222,7 @@ const App = () => {
             <Route
               path="/insumos"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Insumos />
                   </Layout>
@@ -196,7 +234,7 @@ const App = () => {
             <Route
               path="/insumos/new"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <NewInsumo />
                   </Layout>
@@ -208,7 +246,7 @@ const App = () => {
             <Route
               path="/insumos/edit/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EditInsumo />
                   </Layout>
@@ -220,7 +258,7 @@ const App = () => {
             <Route
               path="/entry/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EntryDetail />
                   </Layout>
@@ -232,7 +270,7 @@ const App = () => {
             <Route
               path="/entry/edit/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EditEntry />
                   </Layout>
@@ -244,7 +282,7 @@ const App = () => {
             <Route
               path="/colheitas"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Colheitas />
                   </Layout>
@@ -256,7 +294,7 @@ const App = () => {
             <Route
               path="/colheitas/new"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <NewColheita />
                   </Layout>
@@ -268,7 +306,7 @@ const App = () => {
             <Route
               path="/colheitas/edit/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EditColheita />
                   </Layout>
@@ -280,7 +318,7 @@ const App = () => {
             <Route
               path="/equipment"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Equipment />
                   </Layout>
@@ -292,7 +330,7 @@ const App = () => {
             <Route
               path="/equipment/new"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <NewEquipment />
                   </Layout>
@@ -304,7 +342,7 @@ const App = () => {
             <Route
               path="/equipment/edit/:id"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <EditEquipment />
                   </Layout>
@@ -316,7 +354,7 @@ const App = () => {
             <Route
               path="/gallery"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <div className="p-4">Galeria (em breve)</div>
                   </Layout>
@@ -328,7 +366,7 @@ const App = () => {
             <Route
               path="/stats"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Stats />
                   </Layout>
@@ -340,7 +378,7 @@ const App = () => {
             <Route
               path="/backup"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Backup />
                   </Layout>
@@ -352,7 +390,7 @@ const App = () => {
             <Route
               path="/calculators"
               element={
-                isAuthenticated ? (
+                session ? (
                   <Layout>
                     <Calculators />
                   </Layout>

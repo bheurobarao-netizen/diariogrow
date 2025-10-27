@@ -1,63 +1,69 @@
 import { useState } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Leaf, Lock } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Leaf, Lock, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const LoginScreen = () => {
-  const [pin, setPin] = useState('');
-  const [isNewUser, setIsNewUser] = useState(false);
-  const [confirmPin, setConfirmPin] = useState('');
-  const { login, setPin: savePin, pin: storedPin } = useAuthStore();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [isSignup, setIsSignup] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (!storedPin) {
-      // Primeiro acesso - criar PIN
-      if (pin.length < 4) {
-        toast({
-          title: 'Senha muito curta',
-          description: 'A senha deve ter pelo menos 4 caracteres',
-          variant: 'destructive',
+    try {
+      if (isSignup) {
+        // Cadastro
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              username: username,
+            },
+            emailRedirectTo: `${window.location.origin}/`,
+          },
         });
-        return;
-      }
-      
-      if (pin !== confirmPin) {
+        
+        if (error) throw error;
+        
         toast({
-          title: 'Senhas não conferem',
-          description: 'Digite a mesma senha nos dois campos',
-          variant: 'destructive',
+          title: 'Conta criada!',
+          description: 'Você já pode fazer login',
         });
-        return;
-      }
-      
-      savePin(pin);
-      toast({
-        title: 'Bem-vindo!',
-        description: 'Seu diário foi criado com sucesso',
-      });
-    } else {
-      // Login com PIN existente
-      if (login(pin)) {
+        
+        setIsSignup(false);
+      } else {
+        // Login
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (error) throw error;
+        
         toast({
           title: 'Bem-vindo de volta!',
           description: 'Login realizado com sucesso',
         });
-      } else {
-        toast({
-          title: 'Senha incorreta',
-          description: 'Tente novamente',
-          variant: 'destructive',
-        });
       }
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
-  
-  const isFirstTime = !storedPin;
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-primary p-6">
@@ -74,47 +80,71 @@ const LoginScreen = () => {
           <div className="flex items-center gap-2 text-primary mb-4">
             <Lock className="w-5 h-5" />
             <h2 className="text-xl font-semibold">
-              {isFirstTime ? 'Criar Senha' : 'Login'}
+              {isSignup ? 'Criar Conta' : 'Login'}
             </h2>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {isFirstTime ? 'Escolha sua senha (4-20 caracteres)' : 'Digite sua senha'}
-              </label>
-              <Input
-                type="password"
-                maxLength={20}
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="••••••••"
-                className="text-center text-xl tracking-wide"
-              />
-            </div>
-            
-            {isFirstTime && (
+            {isSignup && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Confirme sua senha</label>
+                <Label htmlFor="username">Nome de usuário</Label>
                 <Input
-                  type="password"
-                  maxLength={20}
-                  value={confirmPin}
-                  onChange={(e) => setConfirmPin(e.target.value)}
-                  placeholder="••••••••"
-                  className="text-center text-xl tracking-wide"
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Seu nome de usuário"
+                  required={isSignup}
                 />
               </div>
             )}
             
-            <Button type="submit" className="w-full gradient-primary">
-              {isFirstTime ? 'Criar Diário' : 'Entrar'}
+            <div className="space-y-2">
+              <Label htmlFor="email">
+                <Mail className="w-4 h-4 inline mr-2" />
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                minLength={6}
+              />
+            </div>
+            
+            <Button type="submit" className="w-full gradient-primary" disabled={loading}>
+              {loading ? 'Carregando...' : isSignup ? 'Criar Conta' : 'Entrar'}
             </Button>
           </form>
+          
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignup(!isSignup)}
+              className="text-sm text-primary hover:underline"
+            >
+              {isSignup ? 'Já tem conta? Faça login' : 'Não tem conta? Cadastre-se'}
+            </button>
+          </div>
         </div>
         
         <p className="text-center text-white/60 text-sm">
-          🔒 Seus dados são privados e armazenados apenas no seu dispositivo
+          🔒 Seus dados são privados e seguros
         </p>
       </div>
     </div>
